@@ -1,7 +1,7 @@
 ---
 layout: post
 category: personal
-title: coffee in waterloo + kitchener
+title: Coffee in Waterloo and Kitchener
 date: 2016-01-11 01:02:03
 ---
 

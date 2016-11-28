@@ -1,7 +1,7 @@
 ---
 layout: post
 category: linux
-title: the power of hdd's and ssd-cache
+title: Installing an SSD for HDD caching (SSD-Cache)
 date: 2015-02-22 01:02:03
 ---
 

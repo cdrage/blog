@@ -1,7 +1,7 @@
 ---
 layout: post
 category: linux
-title: scalable low-consumption high-performance network ids, ips and security monitoring, welcome to suricata, barnyard2 and snorby!
+title: Scalable low-consumption high-performance network IDS, IPS and security monitoring, welcome to Suricata, Barnyard2 and Snorby!
 date: 2014-05-15 15:49
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 category: docker networking
-title: easy multi-host networking
+title: Easy Docker multi-host networking
 date: 2015-11-06 01:02:03
 ---
 
@@ -47,9 +47,9 @@ There's two ways to deploy an overlay multi-host network, either:
 
 We'll focus on using docker-machine for deployment, if you'd like to configure it manually visit the official [docs](https://docs.docker.com/engine/userguide/networking/dockernetworks/).
 
-## Now let's set it up!
+# Now let's set it up!
 
-###Define the servers you're using
+## Define the servers you're using
 
 _Let's assume you have root access to your server and SSH running._
 
@@ -59,7 +59,7 @@ export IP2=10.10.10.2 # machine 1
 export IP3=10.10.10.3 # machine 2
 ```
 
-###First, let's get our Consul server up and running.
+## First, let's get our Consul server up and running.
 
 ```bash
 docker-machine create \
@@ -73,7 +73,7 @@ docker $(docker-machine config consul) run -d \
     progrium/consul -server -bootstrap
 ```
 
-###Our first multi-host server
+## Our first multi-host server
 
 ```bash
 docker-machine create \
@@ -84,7 +84,7 @@ docker-machine create \
     machine1
 ```
 
-###Our second multi-host server
+## Our second multi-host server
 
 ```bash
 docker-machine create \
@@ -95,7 +95,7 @@ docker-machine create \
     machine2
 ```
 
-###Use docker-machine env variables and setup the overlay network
+## Use docker-machine env variables and setup the overlay network
 
 ```bash
 docker $(docker-machine config machine1) network create -d overlay myapp
@@ -104,7 +104,7 @@ docker $(docker-machine config machine2) network ls
 
 Use __docker network ls__ on any host and you'll see that the overlay network is now available as __myapp__. This network is available to all of those clustered to the same KV (Consul) server.
 
-###Now use containers and the overlay network!
+## Now use containers and the overlay network!
 
 ```bash
 docker $(docker-machine config machine1) run -d --name=web --net=myapp nginx

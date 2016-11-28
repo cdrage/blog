@@ -1,7 +1,7 @@
 ---
 layout: post
 category: raspberry pi
-title: tracking airplanes
+title: Tracking airplanes with a Raspberry Pi
 date: 2014-08-18
 ---
 

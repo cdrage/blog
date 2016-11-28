@@ -7,7 +7,7 @@ date: 2015-11-30 01:02:03
 
 Tired of trying to figure out what password to generate?
 
-Put this in your __.bashrc__ or __.zshrc__ and smoke it.
+Stick this in your __.bashrc__ and smoke it.
 
 ```bash
 xkcd_password() {

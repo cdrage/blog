@@ -1,9 +1,11 @@
 ---
 layout: post
 category:  docker + monitoring
-title:  fast scaleable monitoring solution (sensu) with notifications (slack, email) and metrics (graphite)
+title:  A fast scaleable monitoring solution (Sensu) with notifications (Slack, Email) and metrics (Graphite)
 date: 2015-03-24 01:02:03
 ---
+
+__UPDATE 11/28/2016__: I'd reccomend checking out [Prometheus](https://prometheus.io/) instead. A great alternative and really easy to setup (if you know Docker + Docker Compose).
 
 Installing services, reading documentation, deploying on a compatible OS. It's a bitch. That's why Docker has gained such popularity within the past couple of years. What started as a simple LXC project erupted into an assortment of different forks and implementations. Want a Platform as a Service that deploys web servers programatically in less than 1,000 lines of code? Use Docker and Go. Why am I saying this? It's because all it takes is a few lines of text and a download of a repo and your service is up and running, on any OS, on multiple cloud providers. 
 

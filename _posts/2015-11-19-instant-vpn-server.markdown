@@ -1,14 +1,14 @@
 ---
 layout: post
 category: docker
-title: an instant(ish) openvpn server
+title: An instant(ish) OpenVPN server
 date: 2015-11-19 01:02:03
 ---
 
 Ever want to launch your own Docker VPN with no configuration necessary?
 
 
-### On the server
+## Server
 
 Run the OpenVPN server
 
@@ -27,7 +27,7 @@ Let's temporarily serve our openvpn config :)
 
 Don't exit! Keep it up and running until we download it from our client.
 
-#### On the client
+## Client
 
 Let's setup our VPN
 
