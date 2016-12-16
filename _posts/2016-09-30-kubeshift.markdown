@@ -13,7 +13,7 @@ Taking the code from a [previous project](https://github.com/projectatomic/atomi
 
 It's super easy to use [Kubeshift](https://github.com/cdrage/kubeshift).
 
-### Installation
+## Installation
 
 Installation is done either through Git clone or Pip.
 
@@ -23,7 +23,7 @@ git clone https://github.com/cdrage/kubeshift && cd kubeshift && sudo make insta
 sudo pip install kubeshift
 ```
 
-### Use
+## Use
 
 After bringing your Kubernetes cluster / OpenShift cluster up, use one of the built-in methods to create a pod!
 
@@ -46,7 +46,7 @@ client.create(k8s_object)  # Creates the k8s object
 ```
 
 
-### Main features
+## Main features
 
 [Kubeshift](https://github.com/cdrage/kubeshift) excels at configuration generation. Either specifying a configuration file (ex. `/ghome/user/.kube/config`) or leaving it blank will generate an appropriate config in order to communicate to the cluster.
 
