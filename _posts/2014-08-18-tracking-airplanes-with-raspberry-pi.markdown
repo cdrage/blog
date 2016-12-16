@@ -27,81 +27,81 @@ The quick-and-easy way to install (we will go over the individual commands later
 
 ```bash
 #DO NOT plug in your USB dongle before excuting. Simply copy and paste these commands into your root directory and plug in your dongle after reboot. Your web-server will be located at {ip}:8080
- sudo apt-get -y update
- sudo apt-get -y upgrade
+sudo apt-get -y update
+sudo apt-get -y upgrade
 
- sudo apt-get -y install git-core
- sudo apt-get -y install git
- sudo apt-get -y install cmake
- sudo apt-get -y install libusb-1.0-0-dev
- sudo apt-get -y install build-essential
+sudo apt-get -y install git-core
+sudo apt-get -y install git
+sudo apt-get -y install cmake
+sudo apt-get -y install libusb-1.0-0-dev
+sudo apt-get -y install build-essential
 
- git clone git://git.osmocom.org/rtl-sdr.git
- cd rtl-sdr
- mkdir build
- cd build
- cmake ../ -DINSTALL_UDEV_RULES=ON
- make
- sudo make install
- sudo ldconfig
- cd ~
- sudo cp ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
+git clone git://git.osmocom.org/rtl-sdr.git
+cd rtl-sdr
+mkdir build
+cd build
+cmake ../ -DINSTALL_UDEV_RULES=ON
+make
+sudo make install
+sudo ldconfig
+cd ~
+sudo cp ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
 
- git clone git://github.com/MalcolmRobb/dump1090.git
- cd dump1090
- make
- cd ~
- sudo cp ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
- sudo chmod +x /etc/init.d/dump1090.sh
- sudo update-rc.d dump1090.sh defaults
+git clone git://github.com/MalcolmRobb/dump1090.git
+cd dump1090
+make
+cd ~
+sudo cp ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
+sudo chmod +x /etc/init.d/dump1090.sh
+sudo update-rc.d dump1090.sh defaults
 
- printf 'blacklist dvb_usb_rtl28xxu\nblacklist rtl2832\nblacklist rtl2830\n' > nortl.conf
- 
- sudo cp ./nortl.conf /etc/modprobe.d/notrl.conf
+printf 'blacklist dvb_usb_rtl28xxu\nblacklist rtl2832\nblacklist rtl2830\n' > nortl.conf
 
- sudo reboot
+sudo cp ./nortl.conf /etc/modprobe.d/notrl.conf
+
+sudo reboot
 ```
 
 ##Detailed explanation
 
 ```bash
 
- sudo apt-get -y update
- sudo apt-get -y upgrade
+sudo apt-get -y update
+sudo apt-get -y upgrade
 
- sudo apt-get -y install git-core
- sudo apt-get -y install git
- sudo apt-get -y install cmake
- sudo apt-get -y install libusb-1.0-0-dev
- sudo apt-get -y install build-essential
+sudo apt-get -y install git-core
+sudo apt-get -y install git
+sudo apt-get -y install cmake
+sudo apt-get -y install libusb-1.0-0-dev
+sudo apt-get -y install build-essential
 ```
 Updating and installing required software.
 
 ```bash
 git clone git://git.osmocom.org/rtl-sdr.git
- cd rtl-sdr
- mkdir build
- cd build
- cmake ../ -DINSTALL_UDEV_RULES=ON
- make
- sudo make install
- sudo ldconfig
- cd ~
- sudo cp ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
+cd rtl-sdr
+mkdir build
+cd build
+cmake ../ -DINSTALL_UDEV_RULES=ON
+make
+sudo make install
+sudo ldconfig
+cd ~
+sudo cp ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
 ```
 Installing the rtl-sdr driver in order for the Raspberry Pi to communicate to the dongle. 
 
 ```bash
- git clone git://github.com/MalcolmRobb/dump1090.git
- cd dump1090
- make
+git clone git://github.com/MalcolmRobb/dump1090.git
+cd dump1090
+make
 ```
 The important part dump1090 captures all the data that is outputted by the dongle and parses it so it is communicatable to us. After you make dump1090 and rebooted your Pi you can now run and interact with the received data.
 
 ```bash
 printf 'blacklist dvb_usb_rtl28xxu\nblacklist rtl2832\nblacklist rtl2830\n' > nortl.conf
- 
- sudo cp ./nortl.conf /etc/modprobe.d/notrl.conf
+
+sudo cp ./nortl.conf /etc/modprobe.d/notrl.conf
 ```
 This blacklists the driver in modprobe.d. This is required in order to use the dongle.
 
@@ -113,9 +113,9 @@ This blacklists the driver in modprobe.d. This is required in order to use the d
 And that's it. That's all you need to do. If you want to start dump1090 automatically in networked mode (the interactive web page), run this:
 
 ```bash
- sudo cp ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
- sudo chmod +x /etc/init.d/dump1090.sh
- sudo update-rc.d dump1090.sh defaults
+sudo cp ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
+sudo chmod +x /etc/init.d/dump1090.sh
+sudo update-rc.d dump1090.sh defaults
 ```
 ##The final outcome
 ![Airplane](/img/piairplane.png)
