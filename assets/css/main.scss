@@ -4,6 +4,15 @@
 @import "reset";
 @import "config";
 
+.profile-picture {
+    height: 150px;
+    width: 150px;
+    position: relative;
+    margin: 0px 0 0 5px;
+    float: right;
+    border-radius: 50%;
+}
+
 body {
 	color: $color-black;
 	background: $color-white;
