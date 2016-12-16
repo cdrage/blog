@@ -1,7 +1,17 @@
 ---
 layout: about
+title: Contact
 ---
-## gpg
+
+## Email
+charlie (at) charliedrage (dot) com
+
+## Social
+[cdrage @ github](https://github.com/cdrage)
+
+[cdrage @ twitter](https://twitter.com/cdrage)
+
+## GPG
 
 [http://pgp.mit.edu/pks/lookup?op=get&search=0xDA227403C037D617](http://pgp.mit.edu/pks/lookup?op=get&search=0xDA227403C037D617)
 

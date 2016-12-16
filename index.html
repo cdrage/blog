@@ -12,8 +12,12 @@ layout: default
         {% endfor %}
     </ul>
 </div>
+
 <div class="blog">
-    <h1>Blog Posts:</h1>
+  {% capture my-include %}{% include index.md %}{% endcapture %}
+  {{ my-include | markdownify }}
+  <br>    
+  <h1>Blog</h1>
     <ul>
         {% for post in site.posts %}
         <li>
