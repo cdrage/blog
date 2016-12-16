@@ -12,7 +12,7 @@ Stick this in your __.bashrc__ and smoke it.
 ```bash
 xkcd_password() {
   shuf -n5 /usr/share/dict/words | sed -e ':a;N;$!ba;s/\n/ /g;s/'\''//g;s/\b\(.\)/\u\1/g;s/ //g'
-  }
+}
 ```
 
 ```bash

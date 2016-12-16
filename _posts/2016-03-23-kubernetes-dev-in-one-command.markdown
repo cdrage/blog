@@ -5,7 +5,7 @@ title: Kubernetes local development cluster up in one command
 date: 2016-03-23 12:45
 ---
 
-UPDATE 11/28/2016: I'd recommend using `minikube` or `oc cluster up` instead.
+__UPDATE 11/28/2016:__ I'd recommend using `minikube` or `oc cluster up` instead.
 
 If you'd still like access to this script, It's most likely still in my [dotfiles](https://github.com/cdrage/dotfiles)
 
