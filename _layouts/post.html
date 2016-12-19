@@ -1,21 +1,44 @@
 ---
 layout: default
+comments: true
 ---
 
+<div class="header">
+    <h1>{{ site.name }}</h1>
+    <ul>
+        <li>
+    <a class="about__back" href="/">&lt;-- back</a>
+        </li>
+    </ul>
+</div>
 <div class="post">
-	<div class="post__back">
-    	<a href="/">&lt;-- home</a>
-    </div>
-    <div class="post__title">
-    	<h1>{{ page.title }}</h1>
-    </div>
-    <div class="post__date">
-    	<p>{{ page.date | date: '%B %-d, %Y' }}</p>
-    </div>
-    <div class="post__meta">
-    	<p>{{ tags_content }}</p>
-    </div>
-    <div class="post__content"?>
-        {{ content }}
-    </div>
+  <div class="post__title">
+    <h1>{{ page.title }}</h1>
+  </div>
+  <div class="post__date">
+    <p>{{ page.date | date: '%B %-d, %Y' }}</p>
+  </div>
+  <div class="post__meta">
+    <p>{{ tags_content }}</p>
+  </div>
+  <div class="post__content"?>
+    {{ content }}
+
+    <h1 class="comments_title">Comments</h1>
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+      var disqus_shortname = 'charliedrage'; // required: replace example with your forum shortname
+      // var disqus_developer = 1; // Comment out when the site is live
+      var disqus_identifier = "{{ page.url }}";
+
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+
+  </div>
 </div>
