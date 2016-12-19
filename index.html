@@ -17,9 +17,9 @@ layout: default
   {% capture my-include %}{% include index.md %}{% endcapture %}
   {{ my-include | markdownify }}
   <br>    
-  <h1>Blog</h1>
+  <h1>Latest Blog Posts</h1>
     <ul>
-        {% for post in site.posts %}
+        {% for post in site.posts limit:10 %}
         <li>
             <span class="date">{{ post.date | date: '%Y %b %d' }}</span> - <a href="{{ post.url }}">{{ post.title }}</a>
         </li>
