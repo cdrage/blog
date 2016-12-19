@@ -5,4 +5,5 @@ I'm a professional software developer working in multiple languages on multiple 
 
 <br>
 # Technical Interests
+
 I'm a full-stack software developer with a variety of skills. I've implemented RESTful APIs for companies with a 60,000+ user base, developed on both front-end and back-end infrastructure, created Android applications as well as launched multiple businesses.
