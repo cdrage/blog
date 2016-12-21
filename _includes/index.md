@@ -1,5 +1,7 @@
 <img class="profile-picture hoverZoomLink" src="img/me.jpg">
+
 # Hi, I'm Charlie
+
 I'm a professional software developer working in multiple languages on multiple projects. 
 
 I'm interested in __programming__, __API integration__, __Linux__ and __SaaS products__. Among other things, I; design, develop and launch business solutions and products.
