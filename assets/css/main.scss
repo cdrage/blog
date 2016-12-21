@@ -39,6 +39,7 @@ h1 {
 p {
   font-size: 1em;
   line-height: 150%;
+  margin-bottom:15px;
 }
 a {
   color: $color-link;
@@ -83,7 +84,7 @@ ul {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-bottom: 50px;
+  padding-bottom: 10px;
   @media screen and (max-width: $br) {
     display: block;
   }

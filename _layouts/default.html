@@ -1,35 +1,54 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
     {% if page.title %}
-        <title>{{ page.title }}</title>
+    <title>{{ page.title }}</title>
     {% else %}
-        <title>{{ site.name }}</title>
+    <title>{{ site.title }}</title>
     {% endif %}
 
-    <meta name="description" content="{{ site.description }}">
+    <meta itemprop="description" name="description" content="{% if page.description %}{{ page.description | truncate: 160 }}{% else %}{{ site.description | truncate: 160  }}{% endif %}" />
 
     {% if site.google_verification %}
-        <meta name="google-site-verification" content="{{ site.google_verify }}">
+    <meta name="google-site-verification" content="{{ site.google_verify }}">
     {% endif %}
 
     <link rel="icon" href="/assets/img/favicon.png">
     <link rel="stylesheet" 
-href="https://fonts.googleapis.com/css?family=Inconsolata:400,700">
+          href="https://fonts.googleapis.com/css?family=Inconsolata:400,700">
     <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
-</head>
 
-<body>
+    <!-- OpenGraph -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{%if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta property="og:site_name" content="Charlie Drage">
+    <meta property="article:publisher" content="http://www.facebook.com/charliedrage" />
+    <meta property="article:author" content="https://www.facebook.com/charliedrage" />
+    <meta property="article:published_time" content="{{ page.date }}" />
+    <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="{%if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
+    <meta name="twitter:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    <meta name="twitter:site" content="@cdrage" />
+    <meta name="twitter:creator" content="@cdrage">
+    <meta name="twitter:card" content="summary">
+  </head>
+
+  <body>
 
     <div class="wrapper">
-        {{ content }}
+      {{ content }}
     </div>
 
-</body>
+  </body>
 
 </html>

@@ -4,8 +4,11 @@ permalink: /:title
 
 # My variables
 name: Charlie Drage
-description: Self-proclaimed software developer
+title: Charlie Drage | Freelance Software Developer
+description: Hey, I'm Charlie! A freelance software developer in Canada. I'm addicted to Linux, I love coding and I have a fascination with flight / drones.
 google_verification: null
+tldr: Programmer, minimalistic, Linux fanatic, drone-flying enthusiast. I blog a lot of TLDR's.
+
 
 
 # File management

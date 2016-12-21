@@ -3,12 +3,12 @@ layout: about
 title: Contact
 ---
 
-The best way to contact me is via email: __charlie@charliedrage.com__
+The __best__ way to contact me is email: __charlie@charliedrage.com__
 
-I'm also on a few social sites: [github](https://github.com/cdrage), [twitter](https://twitter.com/cdrage)
+I'm also on [github.com/cdrage](https://github.com/cdrage) and [twitter.com/cdrage](https://twitter.com/cdrage)
 
 
-If you wish to send encrypted/signed email, my __GPG key__ is below as well as on [pgp.mit.edu](http://pgp.mit.edu/pks/lookup?op=get&search=0xDA227403C037D617):
+If you wish to talk privately, my __GPG key__ is below as well as on [pgp.mit.edu](http://pgp.mit.edu/pks/lookup?op=get&search=0xDA227403C037D617).
 
 ```bash
 -----BEGIN PGP PUBLIC KEY BLOCK-----
