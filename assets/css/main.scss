@@ -221,14 +221,14 @@ ul {
     }
     .highlight {
       width:100%;
-      margin-bottom: 15px;
+      margin-top:10px;
+      margin-bottom: 10px;
       line-height: 1.0;
-      padding:10px;
+      padding: 10px 0px 10px 0px;
       border-radius: 3px;
-      background: $color-black;
+      //background: $color-black;
       overflow-x: auto;
       code {
-        color: $color-code;
         background: none;
       }
     }
