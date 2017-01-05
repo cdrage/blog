@@ -16,7 +16,6 @@ layout: default
 <div class="blog">
   {% capture my-include %}{% include index.md %}{% endcapture %}
   {{ my-include | markdownify }}
-  <br>    
   <h1>Latest Articles</h1>
     <ul>
         {% for post in site.posts limit:10 %}
