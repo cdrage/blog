@@ -1,7 +1,7 @@
 ---
 layout: post
 category: smartphone
-title: "Switching from a voice plan to data only in Canada"
+title: "Switching from a voice to a data only smartphone plan in Canada"
 date: 2017-01-30 16:31
 ---
 
