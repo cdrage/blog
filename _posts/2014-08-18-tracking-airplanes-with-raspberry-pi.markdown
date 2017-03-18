@@ -62,7 +62,7 @@ sudo cp ./nortl.conf /etc/modprobe.d/notrl.conf
 sudo reboot
 ```
 
-##Detailed explanation
+## Detailed explanation
 
 ```bash
 
@@ -117,5 +117,6 @@ sudo cp ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
 sudo chmod +x /etc/init.d/dump1090.sh
 sudo update-rc.d dump1090.sh defaults
 ```
-##The final outcome
+
+## The final outcome
 ![Airplane](/img/piairplane.png)
