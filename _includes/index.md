@@ -1,17 +1,11 @@
 <img class="profile-picture hoverZoomLink" src="img/me.jpg">
 
-# Hi, I'm Charlie
+# Hey, I'm Charlie
 
-I'm a professional software developer working in multiple languages on multiple projects. 
+I'm an Enterprise Cloud Architect specializing in __Linux__, __Docker__, __Kubernetes__, __SaaS__, __PaaS__ and __IaaS__ consulting.
 
-I'm interested in __programming__, __API integration__, __Linux__ and __SaaS products__. Among other things, I; design, develop and launch business solutions and products.
+I've worked with __Docker__ since it's early days and I actively contribute to [multiple](https://github.com/kubernetes/kompose/commits?author=cdrage) [Kubernetes](https://github.com/kubernetes/kubernetes/commits?author=cdrage) [related](https://github.com/kedgeproject/kedge/commits?author=cdrage) projects, including [Docker](https://github.com/moby/moby/commits?author=cdrage) [projects](https://github.com/docker/cli/commits?author=cdrage).
 
-# Technical Interests
+I work at [Red Hat](https://redhat.com). I've also worked at tech-related companies such as [Fibernetics Ventures](http://www.fibernetics.ca/about-us/fibernetics-ventures/) and researched software at [UOIT](https://uoit.ca/).
 
-I'm a full-stack software developer that specializes in virtual machines as well as containers. My tools of the trade are __Ruby__ and __Python__ for anything script related. __Go__, __Rust__ (as of recently) and __Java__ (sometimes) for compiled binaries / production.
-
-Anything to do with containers, I've both contributed and worked with it. That includes: __Docker__, __rkt__,  __Kubernetes__, CoreOS and Project Atomic. I am part of both the [Kubernetes](https://github.com/kubernetes) and [Project Atomic](github.com/projectatomic) organizations.
-
-I've also worked extensively on virtual machines as well as the "cloud". Utilizing __KVM__ as well as __libvirt__ during most of my time. I implemented a public RESTful API for a cloud company with over 60,000+ virtual machines, created multiple hosting companies with custom written software as well as deployed and maintained thousands of virtual machines.
-
-I'm an advocate for FOSS, you can find (most) of my contributions on [GitHub](https://github.com/cdrage).
+My consulting services are based out of Waterloo, Ontario, Canada but I do remote freelance work for clients elsewhere. Visit my [contact](/contact) information to get a hold of me.
