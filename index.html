@@ -16,11 +16,19 @@ layout: default
 <div class="blog">
   {% capture my-include %}{% include index.md %}{% endcapture %}
   {{ my-include | markdownify }}
-  <h1>Latest Articles</h1>
+  <h1>Blog</h1>
     <ul>
-        {% for post in site.posts limit:10 %}
+        {% for post in site.posts limit:3 %}
         <li>
             <span class="date">{{ post.date | date: '%y %b %d' }}</span> - <a href="{{ post.url }}">{{ post.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+  <h1>Notes</h1>
+    <ul>
+        {% for post in site.notes limit:3 %}
+        <li>
+            <a href="{{ post.url }}">{{ post.title }}</a>
         </li>
         {% endfor %}
     </ul>

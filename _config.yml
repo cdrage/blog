@@ -1,6 +1,10 @@
 # Blog settings
-permalink: /:title
+permalink: /blog/:title
 
+collections:
+  notes:
+    output: true
+    permalink: /notes/:title
 
 # My variables
 name: Charlie Drage

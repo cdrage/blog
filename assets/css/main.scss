@@ -81,7 +81,7 @@ ul {
 
 
 .wrapper {
-  max-width: 600px;
+  max-width: $br;
   margin: auto;
   padding: 60px 30px 60px 30px;
   @media screen and (max-width: $br) {
@@ -151,13 +151,15 @@ ul {
       padding-right: 10px;
       padding-bottom: 2px;
       text-decoration: none;
-      border-bottom: 3px solid $color-black;
+      //border-bottom: 3px solid $color-black;
     }
   }
   &__date {
     p {
       font-size: 1em;
       font-style: italic;
+      padding-top:0px;
+      margin-top:0px;
     }
   }
   &__meta {
@@ -186,7 +188,7 @@ ul {
     }
     a {
       padding-bottom: 1px;
-      border-bottom: 1px solid $color-link;
+      //border-bottom: 1px solid $color-link;
       &:hover {
         background-color: $color-grey;
         text-decoration: none;
@@ -200,19 +202,14 @@ ul {
     }
     ul {
       font-size: 1em;
-      list-style: circle;
-      margin-left: 30px;
-      margin-top: -10px;
-      margin-bottom: 15px;
+      list-style: square;
+      margin-left: 25px;
+      margin-top: 0px;
+      margin-bottom: 0px;
       li {
-        padding: 5px;
-        padding-left: 5px;
-        @media screen and (max-width: $br) {
-          padding: 10px 0 10px 0;
-        }
-      }
-      @media screen and (max-width: $br) {
-        margin-left: 10px;
+        padding: 3px;
+        padding-left: 0px;
+        padding-bottom:0px;
       }
     }
     img {
@@ -236,8 +233,10 @@ ul {
       line-height: 1.0;
       padding: 10px 0px 10px 0px;
       border-radius: 3px;
-      //background: $color-black;
+      background: $color-grey;
+      padding: 5px;
       overflow-x: auto;
+      font-family: monospace;
       code {
         background: none;
       }
@@ -275,4 +274,59 @@ ul {
 
 img {
   width:100%;
+}
+
+table{
+   background: #fff;
+}
+table,thead,tbody,tfoot,tr, td,th{
+  text-align: left;
+  margin: auto;
+  border:1px solid #dedede;
+  padding: 0.5rem;
+  //width: 50%;
+}
+.table    { display: table; width: 50%; }
+.tr       { display: table-row;  }
+.thead    { display: table-header-group }
+.tbody    { display: table-row-group }
+.tfoot    { display: table-footer-group }
+.col      { display: table-column }
+.colgroup { display: table-column-group }
+.td, .th   { display: table-cell; width: 50%; }
+.caption  { display: table-caption }
+
+.table,
+.thead,
+.tbody,
+.tfoot,
+.tr,
+.td,
+.th{
+  text-align: center;
+  margin: auto;
+  padding: 1rem;
+}
+.table{
+  background: #fff;
+  margin: auto;
+  border:none;
+  padding: 0;
+  margin-bottom: 5rem;
+}
+
+.th{
+  font-weight: 700;
+  border:1px solid #dedede;
+  &:nth-child(odd){
+    border-right:none;
+  }
+}
+.td{
+  font-weight: 300;
+  border:1px solid #dedede;
+  border-top:none;
+  &:nth-child(odd){
+    border-right:none;
+  }
 }
