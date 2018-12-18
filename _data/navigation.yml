@@ -1,5 +1,8 @@
 - title: blog
   url: /blog
 
+- title: notes
+  url: /notes
+
 - title: contact
   url: /contact

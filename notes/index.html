@@ -2,7 +2,6 @@
 layout: default
 ---
 
-
 <div class="header">
     <h1><a href="/">{{ site.name }}</a></h1>
     <ul>
@@ -16,9 +15,9 @@ layout: default
 
 <div class="blog">
     <ul>
-        {% for post in site.posts %}
+        {% for post in site.notes %}
         <li>
-            <span class="date">{{ post.date | date: '%y %b %d' }}</span> - <a href="{{ post.url }}">{{ post.title }}</a>
+            <a href="{{ post.url }}">{{ post.title }}</a>
         </li>
         {% endfor %}
     </ul>

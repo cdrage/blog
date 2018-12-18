@@ -3,7 +3,9 @@ layout: about
 title: Contact
 ---
 
-The __best__ way to contact me is email: __charlie@charliedrage.com__
+The __best__ way to contact me is email: __charlie (at) charliedrage (dot) com__
+
+My number is: __+1 226 476 (one) (one) (nine) (nine)__
 
 I'm also on [github.com/cdrage](https://github.com/cdrage) and [twitter.com/cdrage](https://twitter.com/cdrage)
 
