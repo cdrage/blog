@@ -6,11 +6,11 @@
 
 ol {
   margin-left:50px;
-  line-height:150%;
+  line-height:1.1em;
 }
 
 li {
-  line-height:150%;
+  line-height:1.1em;
 }
 
 .comments_title {
@@ -47,9 +47,9 @@ h1 {
 }
 p {
   font-size: 1em;
-  line-height: 150%;
-  margin-bottom:15px;
-  margin-top:15px;
+  line-height: 1.1em;
+  margin-bottom:10px;
+  margin-top:10px;
 }
 a {
   color: $color-link;
@@ -170,20 +170,26 @@ ul {
   &__content {
     padding-top: 10px;
     h1 {
-      font-size: 1.4em;
+      font-size: 1.6em;
       font-weight: 700;
       margin-top: 50px;
       margin-bottom: 10px;
     }
     h2 {
-      font-size: 1.1em;
+      font-size: 1.3em;
       font-weight: 700;
-      margin-top: 25px;
+      margin-top: 30px;
       margin-bottom: 5px;
+    }
+    h3 {
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-top: 20px;
+      margin-bottom: 0px;
     }
     p {
       font-size: 1em;
-      line-height: 150%;
+      line-height: 1.1em;
       margin-bottom: 15px;
     }
     a {
@@ -209,7 +215,7 @@ ul {
       li {
         padding: 3px;
         padding-left: 0px;
-        padding-bottom:0px;
+        padding-bottom: 5px;
       }
     }
     img {
@@ -266,7 +272,7 @@ ul {
     }
     p {
       font-size: 1em;
-      line-height: 150%;
+      line-height: 1.1em;
       margin-bottom: 10px;
     }
   }
@@ -281,9 +287,9 @@ table{
 }
 table,thead,tbody,tfoot,tr, td,th{
   text-align: left;
-  margin: auto;
   border:1px solid #dedede;
   padding: 0.5rem;
+  margin-top:10px;
   //width: 50%;
 }
 .table    { display: table; width: 50%; }
