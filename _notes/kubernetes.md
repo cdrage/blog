@@ -1,1 +1,0 @@
-../../../../txt/kubernetes.md
