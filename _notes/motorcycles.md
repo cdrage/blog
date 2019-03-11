@@ -75,9 +75,32 @@ Clear coat:
 # Track tips
 
 ## Track tips for 2019!
+- upper half up, legs open (butt off to one side), outer leg gripping tank: https://www.youtube.com/watch?v=UgguClO3cT0
+- Brake HARDER! So look at: https://www.youtube.com/watch?v=eSajbqGjwCk I should be getting that "wriggling" feeling on EACH corner.... that's the gauge of the limits of braking.
+- be smooth as fuck.
+- make corners as SHORT as possible. drive in fast, turn hard, roll on the throttle hard.
+- look THROUGH the corner... #1.
+- balls to the tank: https://www.youtube.com/watch?v=l04TUNLO3Pg much more comfortable than having your ass all the way back. more control and more feel. Have good body position BEFORE the turn in because moving around while committing to the turn = unsafe...
+- be comfortable with your body position. pivot your hips from the front of the bike. 
 - https://www.youtube.com/watch?v=wI8WpN7aCFM
+- http://onedowntwoup.com/2016/10/22/technique-turning-on-a-closed-throttle/ Closed throttle braking. Close your throttle until the apex. Use engine braking. Do this instead of trail braking..
+- Trail brake (not too much, seriously!)
 - One big thing too, the uneven puck wear is because I'm pushing my leg out TOO much. I need to lean more, put my knee out less and cause more even wear..
 - LEAN MORE!
+- If I'm coming in too hot, try to AVOID braking. Turn, carry your speed and if you think you're running wide, drop your chest / head a little bit lower and you'll be surprised how much more you can turn. Weight the inside peg
+- Seriously look with your eyes more. I stopped doing that at the end of the season. Look where you want to go. 
+- LOOK WITH YOUR EYES. Look exactly where you want to go, look up the track as far as you possibly can.
+- Only half-buttcheck, it's way easier to turn yourself like that..
+- When braking, don't brake "gradually" brake FULL and hard and let off brake towards the end, there's zero point to be braking softly and then hard.
+- You can lean a tiny bit while braking full, but don't start trail braking yet..
+
+## Grip limits
+- Know the "grip" limits. Literally best way to warm up is hard braking / acceleration. Learn to feel the "slide" of the rear when it looses grip.
+- The front will get twitchty / doing a tiny head shake if you're going to lose the front. Sign to add no more weight to front end and to hang off more (head lower, relax bars, etc.)
+- Obviously when braking hard the rear will "lift" since you're braking so hard on the front, if this goes wrong, you'll end up with a front-end tuck
+- You can tell when your tires are cold as it "squirms" when you accelerate.
+- Losing grip on the rear: Your "butt" will start to swing around but you're still pointed in the same direction. Smooth sensation.
+- Losing grip on the front: Jerkier / jerking of the front
 
 ## Four fundamentals
 
@@ -86,8 +109,18 @@ Clear coat:
  - Smooth as fuck on acceleration on corner, max acceleration when straighting up the bike
  - Use your legs *hard* when changing direction. Move your legs then chest.
 
+## Work on closed throttle turning instead of trail braking (much safer and used by Simon Crafar!)
+  - https://www.youtube.com/watch?v=ps12mz_i3-0&t=126s
+	- downshift and use engine braking, closed throttle, no braking
+	- if you do not use all the lean angle available, when you're off the brake and closed throttle, you're not using the bike to it's full potential.
+	- if you fuck up: you can use a TINY bit of throttle to adjust your path, but do NOT accelarate, get your line right. 
+	- keep pushing your brake marker until you no longer need to use throttle to "get" to your turning marker. keep adjust your brake marker until it's brake -> closed throttle -> accelarate.
+
 ## List of tips
 
+- Further you look ahead, the slower everything will feel.
+- Weight the inside peg
+- Ball of your foot on the peg.
 - Move your body BEFORE braking. No need to stick knee out, but get your ass off the seat while braking / set it up!! (this is important)
 - "Steer -> Line -> Gas. That 'gas' can be pre-apex, apex, post-apex -- just as soon as the bike's on the right curve a smooth roll on will stabilize everything as well as give you more speed (even if your roll on is super soft, you'll at least decelerate less than you would by coasting/holding)."
 - "Remember the fastest lines around the track are the ones that allow you to get back on the FG (full gas) or WOT (wide open throttle) the soonest. If you're on full gas quicker than your rivals, all other things being equal, you'll be faster."
@@ -161,6 +194,12 @@ Think slow, think smooth. Good luck out there buddy!
 
 
 ## Body positioning tips
+- Rest outside arm on tank.
+- Feet and legs locked in to the outside
+- 1 butt-cheeck on the seat
+- Arms loose
+- Ball of the foot on the peg
+- Bend your inner elbow, try to go as far as you can go down
 
 So, the first time you get your knee down, it’s going to go something like this. Approaching a corner, gradually squeeze the brake lever as you put your weight into the pegs and slide one butt cheek to the inside. Swivel your inside knee to point as close to 90 degrees out as possible. Move your torso and head down and to the inside, “kissing” the mirror. Feel your outside arm contact the tank and point your inside elbow at the ground. As the speed at which you’re taking corners increases, you’ll naturally drag your knee in this position. As you begin to exit the corner, push the bike upright as your torso moves further off, rolling on the throttle. If the next corner is the same direction, stay where you are. If it’s the opposite, move across the bike and start this all over again. Congratulations, you now deserve the bike you’re riding.
 
