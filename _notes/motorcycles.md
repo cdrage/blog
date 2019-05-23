@@ -17,25 +17,40 @@ GSXR 600:
 
 ### Suspension 
 
-
 | Suspension | Current setting |
 |------------|-----------------|
 | Rearbound  | 2 1/2 turns     |
 
-### Tires
+### Street Tires
 
 | Name            | Tires	Cold PSI | Hot PSI |
 |-----------------|----------------|---------|
 | Dunlop Q4 Front | 32             | 34      |
 | Dunlop Q4 Rear  | 30             | 32      |
 
+### Slicks
 
-### Changing rear tires
 
-Tools: 1/2 inch breaker bar, 1/2 inch torque wrench, 1/2 inch socket set, safety pin / wire things.
+| Name                            | Tires	Cold PSI | Hot PSI |
+|---------------------------------|----------------|---------|
+| Dunlop Front KR448F 2662 (Soft) | 19-22          | 22-25   |
+| Dunlop Rear KR451 0455 (Medium) | 30             | 32      |
 
-Rear axle nut: 36mm
-Front: 24mm
+
+Notes:
+  - Take PSI rating right after getting off the track, there should be a very tiny difference in temperature.. adjust accordingly (up or lower warmer PSI) in order to have predictable PSI from start to finish off track
+  - Dunlop's don't like ground temp below 20c
+  - Sun comes out +2psi, clouds -2psi, windy -1psi, watch for cold tears
+  - 38psi hot always for front
+  - 19-20 psi starters for rear
+
+
+# Using the minivac / brake lines
+
+1. Turn on air compressor + connect minivac to brake nipple, grease up the end to make sure it creates a suction!
+2. Press the lever down (use the metal hinge to keep it down)
+3. Open brake nipple and bleed until you see old fluid come out
+4. Top up MC 
 
 # Painting
 
@@ -75,6 +90,13 @@ Clear coat:
 # Track tips
 
 ## Track tips for 2019!
+- Biggest tip: look ahead, do NOT target fixate, focus on where you are going and go towards it.
+- It's honestly best to brake hard, let go of the brakes and let the bike run. Utilize closed-throttle-turning to the max...
+- keeping checking front tire, make sure you actually HAVE chicken strips all around... chicken strips on front = good, rear = not so much
+- the smoother you are, the faster you're going to go, seriously.  be very very very smooth.
+
+- be comfortable on the bike, let it do the work for you, follow these tips to keep yourself in shape: https://www.reddit.com/r/Trackdays/comments/b7dctk/getting_tired_at_trackdays/
+- be super loose and relaxed! seriouslyyyy
 - upper half up, legs open (butt off to one side), outer leg gripping tank: https://www.youtube.com/watch?v=UgguClO3cT0
 - Brake HARDER! So look at: https://www.youtube.com/watch?v=eSajbqGjwCk I should be getting that "wriggling" feeling on EACH corner.... that's the gauge of the limits of braking.
 - be smooth as fuck.
@@ -94,6 +116,29 @@ Clear coat:
 - When braking, don't brake "gradually" brake FULL and hard and let off brake towards the end, there's zero point to be braking softly and then hard.
 - You can lean a tiny bit while braking full, but don't start trail braking yet..
 
+## Slicks
+- ALWAYS check to see that they're hot before going out
+- On high setting on warmers
+- You will warm them up by accelerating HARD and braking HARD. Zig-zagging / cornering won't do you anything.
+- First couple sessions take it easy and then really go ham
+-
+
+## Mid corner:
+- On max lean through a corner, relax your arms, let the bike turn for you, if you require to put input on the bars while turning, you're doing something wrong.. https://www.youtube.com/watch?v=wvHxUkiLRa0
+- Neautral throttle throughout the corner, staying on your line. 
+- It's not whose first on the gas, it's whose first on FULL gas.
+- Remember to have NO FINGERS on either the clutch or brake... focus on just turning
+- Use the throttle to decrease or increase the turning radius. Use it very very smoothly.. mm's of input, not a handful. No fingers on clutch or brake. 
+
+## Corner exit:
+
+## Straight
+- https://www.youtube.com/watch?v=DlUmKCjIYBI Seriously open the throttle ALL the way... Grit your teeth, shout at the bike and let it RIP.
+
+## Overtaking
+- always take the inside line overtaking, don't cross paths! (ever!)
+
+
 ## Grip limits
 - Know the "grip" limits. Literally best way to warm up is hard braking / acceleration. Learn to feel the "slide" of the rear when it looses grip.
 - The front will get twitchty / doing a tiny head shake if you're going to lose the front. Sign to add no more weight to front end and to hang off more (head lower, relax bars, etc.)
@@ -101,6 +146,19 @@ Clear coat:
 - You can tell when your tires are cold as it "squirms" when you accelerate.
 - Losing grip on the rear: Your "butt" will start to swing around but you're still pointed in the same direction. Smooth sensation.
 - Losing grip on the front: Jerkier / jerking of the front
+
+Notes from: https://www.youtube.com/watch?v=RgX1LB6BvCU
+
+Stuff that inhibits feedback and feel:
+- Too tense on the bars. Have a nice relax grip
+
+Rear limit:
+- Experience small slides on turning
+
+## Braking
+
+- you shouldn't "coast" to the turn. go from throttle to max braking (smoothly).
+- brake hard and you'll find that you can move your brake marker much further, doing all your braking before you ever start your steering.
 
 ## Four fundamentals
 

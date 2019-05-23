@@ -4,6 +4,10 @@ layout: post
 
 Books I've read
 
+# 2019:
+- 02/01/19 - Dune - Frank Herbert
+- 03/01/19 - Dune Messiah - Frank Herbert
+
 # 2018:
 - 01/05/18 - Annihilation - Jeff VanderMeer
 - 02/24/18 - The Disspossed - Ursula K. Le Guin
