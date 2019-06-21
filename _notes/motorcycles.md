@@ -8,25 +8,16 @@ title: Motorcycle notes / track riding
 
 Notes that I've collected over the years from Reddit / online forums / advice from track riders.
 
-## GSXR-600 Info
-
-### Oil change history
-
-GSXR 600:
-- November 2018
-
-### Suspension 
-
-| Suspension | Current setting |
-|------------|-----------------|
-| Rearbound  | 2 1/2 turns     |
+## Tire stuff
 
 ### Street Tires
 
-| Name            | Tires	Cold PSI | Hot PSI |
-|-----------------|----------------|---------|
-| Dunlop Q4 Front | 32             | 34      |
-| Dunlop Q4 Rear  | 30             | 32      |
+| Name             | Tires	Cold PSI | Hot PSI |
+|------------------|----------------|---------|
+| Dunlop Q4 Front  | 32             | 34      |
+| Dunlop Q4 Rear   | 30             | 32      |
+| Dunlop Q3+ Front | 32             | 34      |
+| Dunlop Q3+ Rear  | 30             | 32      |
 
 ### Slicks
 
@@ -87,20 +78,28 @@ Clear coat:
 6. Polish: Run 3-4 passes over whole part with polishing compound + microfiber cloth (apply compound to surface, spread using cloth)
 7. Wax!
 
+
+# Ken Hell's Podcast:
+
+
+# 16 How to Find Your Limits:
+- For brakes: 
+
+
 # Track tips
 
-## Track tips for 2019!
+## Cornering
+- Coasting is the worst possible way to negotiate a corner.
 - Biggest tip: look ahead, do NOT target fixate, focus on where you are going and go towards it.
-- It's honestly best to brake hard, let go of the brakes and let the bike run. Utilize closed-throttle-turning to the max...
-- keeping checking front tire, make sure you actually HAVE chicken strips all around... chicken strips on front = good, rear = not so much
-- the smoother you are, the faster you're going to go, seriously.  be very very very smooth.
+- make corners as SHORT as possible. drive in fast, turn hard, roll on the throttle hard.
 
+## General tips
+- Further you look ahead, the slower everything will feel.
+- the smoother you are, the faster you're going to go, seriously.  be very very very smooth.
 - be comfortable on the bike, let it do the work for you, follow these tips to keep yourself in shape: https://www.reddit.com/r/Trackdays/comments/b7dctk/getting_tired_at_trackdays/
 - be super loose and relaxed! seriouslyyyy
 - upper half up, legs open (butt off to one side), outer leg gripping tank: https://www.youtube.com/watch?v=UgguClO3cT0
-- Brake HARDER! So look at: https://www.youtube.com/watch?v=eSajbqGjwCk I should be getting that "wriggling" feeling on EACH corner.... that's the gauge of the limits of braking.
 - be smooth as fuck.
-- make corners as SHORT as possible. drive in fast, turn hard, roll on the throttle hard.
 - look THROUGH the corner... #1.
 - balls to the tank: https://www.youtube.com/watch?v=l04TUNLO3Pg much more comfortable than having your ass all the way back. more control and more feel. Have good body position BEFORE the turn in because moving around while committing to the turn = unsafe...
 - be comfortable with your body position. pivot your hips from the front of the bike. 
@@ -115,13 +114,22 @@ Clear coat:
 - Only half-buttcheck, it's way easier to turn yourself like that..
 - When braking, don't brake "gradually" brake FULL and hard and let off brake towards the end, there's zero point to be braking softly and then hard.
 - You can lean a tiny bit while braking full, but don't start trail braking yet..
+- "Steer -> Line -> Gas. That 'gas' can be pre-apex, apex, post-apex -- just as soon as the bike's on the right curve a smooth roll on will stabilize everything as well as give you more speed (even if your roll on is super soft, you'll at least decelerate less than you would by coasting/holding)."
+- "Remember the fastest lines around the track are the ones that allow you to get back on the FG (full gas) or WOT (wide open throttle) the soonest. If you're on full gas quicker than your rivals, all other things being equal, you'll be faster."
+-  Seriously, just work on lines, get the leaning / speed in. Work on getting to full gas or wide open throttle the quickest / soonest. Lines are the KEY.
+- eyes up and ahead
+- work on lines / being smooth with the throttle BEFORE working on body positioning!!!
+- keep bars nice and light, put grip / weight onto outside peg / locking into the tank, supporting your body through your thighs.
+- use visual markers for braking / turning instead of "guessing". use them so you can brake later and turn better.
+- Lean AS LITTLE as possible for the speed you are traveling, get off the bike, lean less and work on technique until you are able to achieve more speed.
+- "The goal of steering is to get through the turn accurately, with as little lean angle as possible (for the speed you are traveling)." Twist of the Wrist II, Chapter 15, paragraph 5. Page 46 
 
-## Slicks
+## Tires / Slicks
+- keeping checking front tire, make sure you actually HAVE chicken strips all around... chicken strips on front = good, rear = not so much
 - ALWAYS check to see that they're hot before going out
 - On high setting on warmers
 - You will warm them up by accelerating HARD and braking HARD. Zig-zagging / cornering won't do you anything.
 - First couple sessions take it easy and then really go ham
--
 
 ## Mid corner:
 - On max lean through a corner, relax your arms, let the bike turn for you, if you require to put input on the bars while turning, you're doing something wrong.. https://www.youtube.com/watch?v=wvHxUkiLRa0
@@ -129,15 +137,31 @@ Clear coat:
 - It's not whose first on the gas, it's whose first on FULL gas.
 - Remember to have NO FINGERS on either the clutch or brake... focus on just turning
 - Use the throttle to decrease or increase the turning radius. Use it very very smoothly.. mm's of input, not a handful. No fingers on clutch or brake. 
+- **When you reach max lean angle:** You will feel your maximum lean angle when the rear tire gets a bit squirelly... another is knee's scraping. However.. you should try to MINIMIZE lean angle through turns, by maximizing the radius as well as bodypoitioning. 
+- To adjust your line in-corner: the lean is set at the beginning of the line. to adjust, DONT push on bars, simply increase or decrease your throttle. DONT coast. it will feel uneasy, either always be braking until the apex, or on the throttle.. you STEER WITH THE REAR WHEEL. Set your lean at entry, decrease / increase line with throttle
 
-## Corner exit:
+## Corner exit
 
 ## Straight
 - https://www.youtube.com/watch?v=DlUmKCjIYBI Seriously open the throttle ALL the way... Grit your teeth, shout at the bike and let it RIP.
+- get my ass more back in the seat on straights, try to experiment with putting my ass more in the middle for corners to see if it's more comfortable, otherwise, it's just personal preference!
+
+## Braking
+- Move your body BEFORE braking. No need to stick knee out, but get your ass off the seat while braking / set it up!! (this is important)
+- get ass off seat BEFORE braking.
+- It's honestly best to brake hard, let go of the brakes and let the bike run. Utilize closed-throttle-turning to the max...
+- Brake HARDER! So look at: https://www.youtube.com/watch?v=eSajbqGjwCk I should be getting that "wriggling" feeling on EACH corner.... that's the gauge of the limits of braking.
+- you shouldn't "coast" to the turn. go from throttle to max braking (smoothly).
+- brake hard and you'll find that you can move your brake marker much further, doing all your braking before you ever start your steering.
+- do all downshifting / braking before corner
+- ease on the throttle throughout corner
 
 ## Overtaking
 - always take the inside line overtaking, don't cross paths! (ever!)
 
+## Body positioning
+- Weight the inside peg
+- Ball of your foot on the peg.
 
 ## Grip limits
 - Know the "grip" limits. Literally best way to warm up is hard braking / acceleration. Learn to feel the "slide" of the rear when it looses grip.
@@ -146,19 +170,8 @@ Clear coat:
 - You can tell when your tires are cold as it "squirms" when you accelerate.
 - Losing grip on the rear: Your "butt" will start to swing around but you're still pointed in the same direction. Smooth sensation.
 - Losing grip on the front: Jerkier / jerking of the front
-
-Notes from: https://www.youtube.com/watch?v=RgX1LB6BvCU
-
-Stuff that inhibits feedback and feel:
 - Too tense on the bars. Have a nice relax grip
-
-Rear limit:
-- Experience small slides on turning
-
-## Braking
-
-- you shouldn't "coast" to the turn. go from throttle to max braking (smoothly).
-- brake hard and you'll find that you can move your brake marker much further, doing all your braking before you ever start your steering.
+- Rear limit: Experience small slides on turning
 
 ## Four fundamentals
 
@@ -174,34 +187,8 @@ Rear limit:
 	- if you fuck up: you can use a TINY bit of throttle to adjust your path, but do NOT accelarate, get your line right. 
 	- keep pushing your brake marker until you no longer need to use throttle to "get" to your turning marker. keep adjust your brake marker until it's brake -> closed throttle -> accelarate.
 
-## List of tips
 
-- Further you look ahead, the slower everything will feel.
-- Weight the inside peg
-- Ball of your foot on the peg.
-- Move your body BEFORE braking. No need to stick knee out, but get your ass off the seat while braking / set it up!! (this is important)
-- "Steer -> Line -> Gas. That 'gas' can be pre-apex, apex, post-apex -- just as soon as the bike's on the right curve a smooth roll on will stabilize everything as well as give you more speed (even if your roll on is super soft, you'll at least decelerate less than you would by coasting/holding)."
-- "Remember the fastest lines around the track are the ones that allow you to get back on the FG (full gas) or WOT (wide open throttle) the soonest. If you're on full gas quicker than your rivals, all other things being equal, you'll be faster."
--  Seriously, just work on lines, get the leaning / speed in. Work on getting to full gas or wide open throttle the quickest / soonest. Lines are the KEY.
-- **When you reach max lean angle:** You will feel your maximum lean angle when the rear tire gets a bit squirelly... another is knee's scraping. However.. you should try to MINIMIZE lean angle through turns, by maximizing the radius as well as bodypoitioning. 
-- To adjust your line in-corner: the lean is set at the beginning of the line. to adjust, DONT push on bars, simply increase or decrease your throttle. DONT coast. it will feel uneasy, either always be braking until the apex, or on the throttle.. you STEER WITH THE REAR WHEEL. Set your lean at entry, decrease / increase line with throttle
-- get ass off seat BEFORE braking.
-- get my ass more back in the seat on straights, try to experiment with putting my ass more in the middle for corners to see if it's more comfortable, otherwise, it's just personal preference!
-- eyes up and ahead
-- never use back brake
-- do all downshifting / braking before corner
-- ease on the throttle throughout corner
-- Coasting is the worst possible way to negotiate a corner.
-- work on lines / being smooth with the throttle BEFORE working on body positioning!!!
-- keep bars nice and light, put grip / weight onto outside peg / locking into the tank, supporting your body through your thighs.
-- use visual markers for braking / turning instead of "guessing". use them so you can brake later and turn better.
-- Lean AS LITTLE as possible for the speed you are traveling, get off the bike, lean less and work on technique until you are able to achieve more speed.
-
-## Misc tips
-
-- "The goal of steering is to get through the turn accurately, with as little lean angle as possible (for the speed you are traveling)." Twist of the Wrist II, Chapter 15, paragraph 5. Page 46 
-
-## Tip from reddit
+## Tips from reddit
 
 You're not braking hard enough. Not nearly hard enough. I suspected as much throughout the video then at 2:40 my suspicions were confirmed.
 
