@@ -24,8 +24,8 @@ Notes that I've collected over the years from Reddit / online forums / advice fr
 
 | Name                            | Tires	Cold PSI | Hot PSI |
 |---------------------------------|----------------|---------|
-| Dunlop Front KR448F 2662 (Soft) | 19-22          | 22-25   |
-| Dunlop Rear KR451 0455 (Medium) | 30             | 32      |
+| Dunlop Front KR448F 2662 (Soft) | 33             | 35      |
+| Dunlop Rear KR451 0455 (Medium) | 21             | 23      |
 
 
 Notes:
@@ -157,7 +157,7 @@ Clear coat:
 - ease on the throttle throughout corner
 
 ## Overtaking
-- always take the inside line overtaking, don't cross paths! (ever!)
+- 
 
 ## Body positioning
 - Weight the inside peg

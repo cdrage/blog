@@ -7,6 +7,7 @@ Books I've read
 # 2019:
 - 02/01/19 - Dune - Frank Herbert
 - 03/01/19 - Dune Messiah - Frank Herbert
+- 08/04/19 - The Summer Book - Tove Jansson
 
 # 2018:
 - 01/05/18 - Annihilation - Jeff VanderMeer
