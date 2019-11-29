@@ -1,0 +1,36 @@
+I"�<p>Ever want to launch your own Docker VPN with no configuration necessary?</p>
+
+<h2 id="server">Server</h2>
+
+<p>Run the OpenVPN server</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/charliedrage/dockerfiles <span class="nb">.</span>
+<span class="nb">cd</span> ~/charliedrage/openvpn-server
+docker build <span class="nt">-t</span> openvpn <span class="nb">.</span>
+<span class="nv">CID</span><span class="o">=</span><span class="si">$(</span>docker run <span class="nt">-d</span> <span class="nt">--privileged</span> <span class="nt">-p</span> 1194:1194/udp <span class="nt">-p</span> 443:443/tcp openvpn<span class="si">)</span>
+</code></pre></div></div>
+
+<p>Let’s temporarily serve our openvpn config :)</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code> docker run <span class="nt">-t</span> <span class="nt">-i</span> <span class="nt">-p</span> 8080:8080 <span class="nt">--volumes-from</span> <span class="nv">$CID</span> opvenvpn serveconfig
+</code></pre></div></div>
+
+<p>Don’t exit! Keep it up and running until we download it from our client.</p>
+
+<h2 id="client">Client</h2>
+
+<p>Let’s setup our VPN</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/charliedrage/dockerfiles <span class="nb">.</span>
+<span class="nb">cd</span> ~/charliedrage/openvpn-client
+docker build <span class="nt">-t</span> openvpn-client <span class="nb">.</span>
+curl YOURSERVERIP:8080 <span class="o">&gt;</span> openvpn.conf 
+</code></pre></div></div>
+
+<p>Now that you’ve got the config and built the server let’s run the client</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-it</span> <span class="nt">-v</span> /home/yourusername/openvpn.conf:/etc/openvpn/openvpn.conf <span class="nt">--net</span><span class="o">=</span>host <span class="nt">--device</span> /dev/net/tun:/dev/net/tun <span class="nt">--cap-add</span><span class="o">=</span>NET_ADMIN openvpn-client openvpn.conf
+</code></pre></div></div>
+
+<p>You’re done! Go check your ip at http:/icanhazip.com and you’ll see it’s the VPN’s.</p>
+:ET

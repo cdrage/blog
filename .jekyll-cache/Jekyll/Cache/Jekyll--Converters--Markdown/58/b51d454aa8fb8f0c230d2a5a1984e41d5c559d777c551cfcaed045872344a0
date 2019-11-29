@@ -1,0 +1,58 @@
+I"�<p>SSD-Cache. Whether you’re using a new laptop or accessing Facebook, in some way or another, SSD-cache is being used.</p>
+
+<p>SSD-Cache is the power of writing and reading information from SSD before the slow-process of writing to HDD is done. Facebook introduced <a href="https://github.com/facebook/flashcache/">Flashcache</a> 4 years ago by Mohan Srinivasan and Paul Saab. With the introduction of SSD’s to high-end data centers and the initial high cost, utilizing the storage capability of HDD with the speed of SSD made sense. As of 2015, even Facebook still uses SSD-Cached storage for most of their database servers.</p>
+
+<p>Why do you need it? Simple. Be able to use the high read/write cycles of SSD’s with the storage capability of HDD’s.</p>
+
+<p>Since then, <a href="https://github.com/facebook/flashcache/">Flashcache</a> has been forked and developed into <a href="https://github.com/stec-inc/EnhanceIO">EnhanceIO</a>, which is still in (semi) active development. Despite the issues with writeback mode (which we won’t use), it’s still as stable as can be, still being used at multiple companies.</p>
+
+<p>Installing <a href="https://github.com/stec-inc/EnhanceIO">EnhanceIO</a> is simple.</p>
+
+<h1 id="installation">Installation</h1>
+
+<p>In our setup, we assume that we have three (1TB) HDD’s and one (256GB) SSD drive located in our (Debian) server rack. We have already setup RAID-5 over the three HDD’s and now we want to use SSD-Cache to speed up the read/write process.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Get the initial files</span>
+apt-get <span class="nb">install </span>build-essential dkms
+git clone https://github.com/stec-inc/EnhanceIO.git
+
+<span class="c"># Compile and install</span>
+<span class="nb">cd </span>EnhanceIO/Driver/enhanceio/
+make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+
+<span class="c"># Copy over manuals</span>
+<span class="nb">cd</span> ~/EnhanceIO/CLI
+<span class="nb">cp </span>eio_cli /sbin/
+<span class="nb">cp </span>eio_cli.8 /usr/share/man/man8
+
+<span class="c"># Initialize the modules </span>
+modprobe enhanceio_lru
+modprobe enhanceio_fifo
+modprobe enhanceio
+
+<span class="c"># To initial the modules on startup, simply add to /etc/modules before loop</span>
+enhanceio_lru
+enhanceio_fifo
+enhanceio
+
+<span class="c"># The best part. Create the drive. Assuming /dev/md0 is our raid partition and /dev/sdd is our SSD drive</span>
+eio_cli create <span class="nt">-d</span> /dev/md0 <span class="nt">-s</span> /dev/sdd <span class="nt">-p</span> fifo <span class="nt">-m</span> wt <span class="nt">-c</span> ssdcache
+</code></pre></div></div>
+
+<h1 id="details">Details</h1>
+
+<p>Let’s get into detail with our eio_cli command.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>eio_cli create <span class="nt">-d</span> /dev/md0 <span class="nt">-s</span> /dev/sdd <span class="nt">-p</span> fifo <span class="nt">-m</span> wt <span class="nt">-c</span> ssdcache
+
+<span class="nt">-d</span> /dev/md0 <span class="c"># Specifies the drive(s) we want to cache</span>
+<span class="nt">-s</span> /dev/sdd <span class="c"># Init's the SSD drive were using to cache.</span>
+<span class="nt">-p</span> fifo <span class="c"># Our cache replacement policy. Can be changed between random, fifo and lru.</span>
+<span class="nt">-m</span> wt <span class="c"># Our caching mode. Can be changed between wt (write-through), wb (write-back) and read</span>
+</code></pre></div></div>
+
+<p>More details on the mode can be found <a href="https://github.com/stec-inc/EnhanceIO">here</a>.</p>
+
+<p>And there you have it! SSD-cache storage ahoy.</p>
+
+:ET

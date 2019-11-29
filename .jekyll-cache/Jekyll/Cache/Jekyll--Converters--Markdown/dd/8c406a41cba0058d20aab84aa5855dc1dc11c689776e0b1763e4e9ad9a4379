@@ -1,0 +1,26 @@
+I"�
+<p>Recently I had to update my Kernel in order to use <a href="https://github.com/torvalds/linux/commit/e9be9d5e76e34872f0c37d72e25bc27fe9e2c54c">OverlayFS</a> which was introduced in Kernel 3.18. Unfortunatley Debian 8 is still on 3.16. That, and the fact that I’ve been wanting to use the newest + latest Kernel improvements.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>ca-certificates curl git kernel-package make libncurses5-dev libssl-dev <span class="nt">-y</span>
+<span class="nv">VERSION</span><span class="o">=</span>4.7.4 <span class="c"># or w/e is newest</span>
+wget https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-<span class="nv">$VERSION</span>.tar.xz
+<span class="nb">tar </span>xaf linux-<span class="nv">$VERSION</span>.tar.xz
+<span class="nb">cd </span>linux-<span class="nv">$VERSION</span>
+<span class="nb">cp</span> /boot/config-<span class="si">$(</span><span class="nb">uname</span> <span class="nt">-r</span><span class="si">)</span> .config <span class="c"># the default config used for debian</span>
+make nconfig <span class="c"># just click save if you're not doing anything special</span>
+make deb-pkg <span class="nt">-j</span><span class="si">$(</span>lscpu | <span class="nb">awk</span> <span class="s1">'/^CPU\(s\):/{print $NF}'</span><span class="si">)</span> <span class="c"># the longest part of the process... this will compile your kernel (auto detects how many cpu's you have to use)</span>
+<span class="nb">sudo </span>dpkg <span class="nt">-i</span> ../linux-image-<span class="k">*</span>.deb <span class="c"># install the new linux images</span>
+<span class="nb">sudo </span>dpkg <span class="nt">-i</span> ../linux-headers-<span class="k">*</span>.deb <span class="c"># install the new headers</span>
+<span class="nb">sudo </span>update-grub <span class="c"># update grub with the new images</span>
+<span class="nb">sudo </span>shutdown <span class="nt">-r</span> now <span class="c"># you'll see it in GRUB</span>
+</code></pre></div></div>
+
+<p>A few notes!</p>
+
+<p>When you run “make nconfig” make sure you select exactly what you’d like. Some features weren’t copied over when copying over the previous configuration <code class="highlighter-rouge">cp /boot/config$(uname -r)</code>.</p>
+
+<p>For example, in order for me to get <code class="highlighter-rouge">Docker</code> to run, I had to enable both <code class="highlighter-rouge">overlayfs</code> as well as dig into the Netfilter module in order to enable <code class="highlighter-rouge">iptables</code> NAT’ing.</p>
+
+<p>Remember to do this, or else like me, you’ll be making another coffee as Linux compiles yet-again.</p>
+:ET

@@ -1,0 +1,24 @@
+I"ä<p>After trying for hours as to why I kept getting:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DHCPDISCOVER on eth1 to 255.255.255.255 port 67 interval 7 
+DHCPDISCOVER on eth1 to 255.255.255.255 port 67 interval 12
+DHCPDISCOVER on eth1 to 255.255.255.255 port 67 interval 10
+</code></pre></div></div>
+
+<p>when setting up private networking with libvirt (QEMU/KVM). I found out that the virtio driver was the root of the cause and came across <a href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Virtualization_Host_Configuration_and_Guest_Installation_Guide/ch11s02.html">this article</a>.</p>
+
+<p>Seems that using virtio when setting up a private networking causes some issues.</p>
+
+<p>To enable private networking:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>virsh edit vm1
+</code></pre></div></div>
+
+<p>and add</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nt">&lt;driver</span> <span class="na">name=</span><span class="s">'qemu'</span><span class="nt">/&gt;</span> 
+</code></pre></div></div>
+
+<p>to the network interface.</p>
+
+:ET

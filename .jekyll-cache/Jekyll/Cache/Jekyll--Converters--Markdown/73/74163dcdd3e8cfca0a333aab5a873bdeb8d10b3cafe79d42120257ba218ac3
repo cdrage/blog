@@ -1,0 +1,24 @@
+I"<p>Got a fresh .qcow2 image from <a href="https://getfedora.org/cloud/download/atomic.html">Fedora</a> and want to resize it before deploying it on your KVM cluster?</p>
+
+<p>Here’s a way to resize it without having to boot it up and expand the partitions yourself.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://download.fedoraproject.org/pub/alt/atomic/stable/Cloud-Images/x86_64/Images/Fedora-Cloud-Atomic-23-20160405.x86_64.qcow2 <span class="nt">-O</span> fedora23-cloud.qcow2
+qemu-img create <span class="nt">-f</span> qcow2 40G-fedora23-cloud.qcow2 40G
+virt-resize <span class="nt">--expand</span> /dev/sda2 <span class="nt">--LV-expand</span> /dev/atomicos/root fedora23-cloud.qcow2 40G-fedora23-cloud.qcow2
+</code></pre></div></div>
+
+<p>That’s it!</p>
+
+<p>Keep in mind that even though <strong>/var/atomicos/root</strong> has been expanded, you must increase your Docker storage via <strong>/etc/sysconfig/docker-storage-setup</strong>.</p>
+
+<p>This can be configured either though cloud initialization data or manually within the file.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#cloud-config</span>
+<span class="na">write_files</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/etc/sysconfig/docker-storage-setup</span>
+    <span class="na">permissions</span><span class="pi">:</span> <span class="m">0644</span>
+    <span class="na">owner</span><span class="pi">:</span> <span class="s">root</span>
+    <span class="na">content</span><span class="pi">:</span> <span class="pi">|</span>
+      <span class="s">ROOT_SIZE=30G</span>
+</code></pre></div></div>
+:ET

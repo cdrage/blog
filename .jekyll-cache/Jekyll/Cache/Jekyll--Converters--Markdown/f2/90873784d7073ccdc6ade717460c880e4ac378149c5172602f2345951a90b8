@@ -1,0 +1,11 @@
+I"T<p>Steps:</p>
+<ol>
+  <li>Deploy using <a href="https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/">kubeadm</a> (hint: There’s some awesome <a href="https://github.com/kairen/kubeadm-ansible">Ansible playbooks</a> to use if you’re running CentOS / Ubuntu)</li>
+  <li>Setup your Ingress controller, the best-one IMO is <a href="https://docs.traefik.io/user-guide/kubernetes/">Traefik</a></li>
+  <li>Optionally: Create your dynamic volume provisioner, I setup a <a href="https://github.com/cdrage/dockerfiles/tree/master/nfs-server">Docker NFS Server</a> and used <a href="https://github.com/kubernetes-incubator/external-storage/tree/master/nfs-client">nfs-client</a> from the Kubernetes external-storage incubator project.</li>
+</ol>
+
+<p>TODO:</p>
+
+<p>I’ll eventually write a tutorial here. These are just my simply notes :)</p>
+:ET

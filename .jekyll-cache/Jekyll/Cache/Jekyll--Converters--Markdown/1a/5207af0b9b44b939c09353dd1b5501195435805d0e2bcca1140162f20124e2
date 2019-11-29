@@ -1,0 +1,109 @@
+I"'<p><img src="/img/cluster.jpg" alt="Cluster" /></p>
+
+<p>The Raspberry Pi can do amazing things. From a personal computer/cloud <a href="http://likemagicappears.com/projects/raspberry-pi-cluster/">Cluster</a> to sending a <a href="http://www.daveakerman.com/">potato</a> to space.</p>
+
+<p>In this blog post, I will show you how I setup my Raspberry Pi to communicate to airplanes using <em>ADS-B</em> (Automatic dependent surveillance-broadcast).</p>
+
+<p>In a nutshell, ADS-B is a cooperative surveillance technology where aircrafts broadcast their position and other flight information which can be received by air traffic control as a replacement for secondary radar. It requires no input from the pilot and is automatically transmitted during flight.</p>
+
+<p>Many airplanes are already equipped with ADS-B and is an element of the <em>US Next Generation Air Transportation System (NextGen)</em> and the <em>Single European Sky ATM Research (SEDAR)</em>. By 2017 it will be mandatory on all major aircraft in Europe and 2020 in the United States.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>You will need two things, a <a href="http://www.raspberrypi.org/">Raspberry Pi</a> and a <a href="http://www.dx.com/p/dvb-t-digital-tv-receiver-usb-dongle-w-fm-remote-control-antenna-black-149928">DVB-T Digital TV Receiver with the Realtek Chip</a>.</p>
+
+<p>First, install Raspbian onto your Raspberry Pi.</p>
+
+<p>In order to enable the connection between the the <em>tuner</em> and the <em>Pi)</em> you will need to compile a driver as well as an output dump.</p>
+
+<p>The quick-and-easy way to install (we will go over the individual commands later):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#DO NOT plug in your USB dongle before excuting. Simply copy and paste these commands into your root directory and plug in your dongle after reboot. Your web-server will be located at {ip}:8080</span>
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> update
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> upgrade
+
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>git-core
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>git
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>cmake
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>libusb-1.0-0-dev
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>build-essential
+
+git clone git://git.osmocom.org/rtl-sdr.git
+<span class="nb">cd </span>rtl-sdr
+<span class="nb">mkdir </span>build
+<span class="nb">cd </span>build
+cmake ../ <span class="nt">-DINSTALL_UDEV_RULES</span><span class="o">=</span>ON
+make
+<span class="nb">sudo </span>make <span class="nb">install
+sudo </span>ldconfig
+<span class="nb">cd</span> ~
+<span class="nb">sudo cp</span> ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
+
+git clone git://github.com/MalcolmRobb/dump1090.git
+<span class="nb">cd </span>dump1090
+make
+<span class="nb">cd</span> ~
+<span class="nb">sudo cp</span> ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
+<span class="nb">sudo chmod</span> +x /etc/init.d/dump1090.sh
+<span class="nb">sudo </span>update-rc.d dump1090.sh defaults
+
+<span class="nb">printf</span> <span class="s1">'blacklist dvb_usb_rtl28xxu\nblacklist rtl2832\nblacklist rtl2830\n'</span> <span class="o">&gt;</span> nortl.conf
+
+<span class="nb">sudo cp</span> ./nortl.conf /etc/modprobe.d/notrl.conf
+
+<span class="nb">sudo </span>reboot
+</code></pre></div></div>
+
+<h2 id="detailed-explanation">Detailed explanation</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> update
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> upgrade
+
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>git-core
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>git
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>cmake
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>libusb-1.0-0-dev
+<span class="nb">sudo </span>apt-get <span class="nt">-y</span> <span class="nb">install </span>build-essential
+</code></pre></div></div>
+<p>Updating and installing required software.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone git://git.osmocom.org/rtl-sdr.git
+<span class="nb">cd </span>rtl-sdr
+<span class="nb">mkdir </span>build
+<span class="nb">cd </span>build
+cmake ../ <span class="nt">-DINSTALL_UDEV_RULES</span><span class="o">=</span>ON
+make
+<span class="nb">sudo </span>make <span class="nb">install
+sudo </span>ldconfig
+<span class="nb">cd</span> ~
+<span class="nb">sudo cp</span> ./rtl-sdr/rtl-sdr.rules /etc/udev/rules.d/
+</code></pre></div></div>
+<p>Installing the rtl-sdr driver in order for the Raspberry Pi to communicate to the dongle.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone git://github.com/MalcolmRobb/dump1090.git
+<span class="nb">cd </span>dump1090
+make
+</code></pre></div></div>
+<p>The important part dump1090 captures all the data that is outputted by the dongle and parses it so it is communicatable to us. After you make dump1090 and rebooted your Pi you can now run and interact with the received data.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">printf</span> <span class="s1">'blacklist dvb_usb_rtl28xxu\nblacklist rtl2832\nblacklist rtl2830\n'</span> <span class="o">&gt;</span> nortl.conf
+
+<span class="nb">sudo cp</span> ./nortl.conf /etc/modprobe.d/notrl.conf
+</code></pre></div></div>
+<p>This blacklists the driver in modprobe.d. This is required in order to use the dongle.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./dump1090 <span class="nt">--help</span> <span class="c">#for help command</span>
+./dump1090 <span class="nt">--interactive</span> <span class="c">#view all data coming in, in a arcade-like console</span>
+./dump1090 <span class="nt">--interactive</span> <span class="nt">--net</span> <span class="c">#view data &amp; create a web server @ {ip}:8080</span>
+</code></pre></div></div>
+<p>And that’s it. That’s all you need to do. If you want to start dump1090 automatically in networked mode (the interactive web page), run this:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo cp</span> ./dump1090/dump1090.sh /etc/init.d/dump1090.sh
+<span class="nb">sudo chmod</span> +x /etc/init.d/dump1090.sh
+<span class="nb">sudo </span>update-rc.d dump1090.sh defaults
+</code></pre></div></div>
+
+<h2 id="the-final-outcome">The final outcome</h2>
+<p><img src="/img/piairplane.png" alt="Airplane" /></p>
+:ET

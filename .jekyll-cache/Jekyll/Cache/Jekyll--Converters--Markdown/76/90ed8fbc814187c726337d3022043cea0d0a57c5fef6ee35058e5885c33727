@@ -1,0 +1,2 @@
+I"b<p>Working with kvm/qemu involves using libguestfs-tools sometimes in order to prep the deployment of servers. I’ve come across the issue of read/writing to FreeBSD partitions using the mount tool. Even though it’s 2015, the Linux Kernel still has experimental write support for UFS. Here’s how to recompile your kernel with ufs write support.</p>
+:ET

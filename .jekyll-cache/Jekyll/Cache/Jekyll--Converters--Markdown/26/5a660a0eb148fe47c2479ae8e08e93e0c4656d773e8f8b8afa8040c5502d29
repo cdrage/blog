@@ -1,0 +1,17 @@
+I"�<p>Tired of trying to figure out what password to generate?</p>
+
+<p>Stick this in your <strong>.bashrc</strong> and smoke it.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xkcd_password<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">shuf</span> <span class="nt">-n5</span> /usr/share/dict/words | <span class="nb">sed</span> <span class="nt">-e</span> <span class="s1">':a;N;$!ba;s/\n/ /g;s/'</span><span class="se">\'</span><span class="s1">'//g;s/\b\(.\)/\u\1/g;s/ //g'</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>~                                                                             ⍉
+▶ xkcd_password 
+DenunciationsVertebralForgersDimerGlum
+
+~                                                                              
+▶ 
+</code></pre></div></div>
+:ET

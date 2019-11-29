@@ -1,0 +1,2 @@
+I"+<p>The release of <strong>Docker 1.9</strong> has brought native multi-host networking into the mix. This changes <em>a lot</em> in the container orchestration world. Ever try to install Kubernetes on a bare metal server without already-implemented private networking? It’s a pain in the ass.</p>
+:ET

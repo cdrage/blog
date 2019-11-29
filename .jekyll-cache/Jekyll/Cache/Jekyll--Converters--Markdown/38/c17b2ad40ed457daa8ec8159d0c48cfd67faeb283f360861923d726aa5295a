@@ -1,0 +1,1114 @@
+I"�+<ul id="markdown-toc">
+  <li><a href="#kubernetes" id="markdown-toc-kubernetes">Kubernetes</a></li>
+  <li><a href="#bare-metal-cluster-at-least-for-development" id="markdown-toc-bare-metal-cluster-at-least-for-development">Bare-metal cluster (at least for development)</a>    <ul>
+      <li><a href="#other-notes-before-continuing" id="markdown-toc-other-notes-before-continuing">Other notes before continuing</a></li>
+      <li><a href="#deployment" id="markdown-toc-deployment">Deployment</a></li>
+      <li><a href="#helm" id="markdown-toc-helm">Helm</a></li>
+      <li><a href="#ingress" id="markdown-toc-ingress">Ingress</a></li>
+      <li><a href="#lets-encrypt" id="markdown-toc-lets-encrypt">Let’s Encrypt</a></li>
+      <li><a href="#loadbalancer" id="markdown-toc-loadbalancer">LoadBalancer</a></li>
+      <li><a href="#storage" id="markdown-toc-storage">Storage</a></li>
+      <li><a href="#monitoring" id="markdown-toc-monitoring">Monitoring</a></li>
+    </ul>
+  </li>
+  <li><a href="#certified-kubernetes-administrator-cka" id="markdown-toc-certified-kubernetes-administrator-cka">Certified Kubernetes Administrator (CKA)</a></li>
+  <li><a href="#components-of-kubernetes" id="markdown-toc-components-of-kubernetes">Components of Kubernetes</a></li>
+  <li><a href="#deployments" id="markdown-toc-deployments">Deployments</a></li>
+  <li><a href="#statefulsets" id="markdown-toc-statefulsets">StatefulSets</a></li>
+  <li><a href="#replicasets-todo" id="markdown-toc-replicasets-todo">ReplicaSets TODO</a></li>
+  <li><a href="#services" id="markdown-toc-services">Services</a></li>
+  <li><a href="#autoscaling--horizontal-pod-autoscalers" id="markdown-toc-autoscaling--horizontal-pod-autoscalers">Autoscaling / Horizontal Pod Autoscalers</a></li>
+  <li><a href="#daemonsets" id="markdown-toc-daemonsets">DaemonSets</a></li>
+  <li><a href="#jobs" id="markdown-toc-jobs">Jobs</a></li>
+  <li><a href="#pods" id="markdown-toc-pods">Pods</a></li>
+  <li><a href="#namespaces" id="markdown-toc-namespaces">Namespaces</a></li>
+  <li><a href="#debugging-commands" id="markdown-toc-debugging-commands">Debugging commands</a></li>
+  <li><a href="#health-checks" id="markdown-toc-health-checks">Health Checks</a></li>
+  <li><a href="#resources" id="markdown-toc-resources">Resources</a></li>
+  <li><a href="#labels-and-selectors" id="markdown-toc-labels-and-selectors">Labels and Selectors</a></li>
+  <li><a href="#annotations" id="markdown-toc-annotations">Annotations</a></li>
+  <li><a href="#endpoints--service-discovery" id="markdown-toc-endpoints--service-discovery">Endpoints / Service Discovery</a></li>
+  <li><a href="#configmaps--secrets" id="markdown-toc-configmaps--secrets">ConfigMaps &amp; Secrets</a></li>
+  <li><a href="#ingresses" id="markdown-toc-ingresses">Ingresses</a></li>
+  <li><a href="#storage-1" id="markdown-toc-storage-1">Storage</a></li>
+  <li><a href="#volumes" id="markdown-toc-volumes">Volumes</a></li>
+  <li><a href="#examples" id="markdown-toc-examples">Examples</a>    <ul>
+      <li><a href="#parse-server" id="markdown-toc-parse-server">Parse server</a></li>
+      <li><a href="#ghost" id="markdown-toc-ghost">Ghost</a></li>
+      <li><a href="#redis" id="markdown-toc-redis">Redis</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="kubernetes">Kubernetes</h1>
+
+<p>Advantages is being able to develop decoupled service-oriented teams that each build a single microservice. Allows mutable infrastructure.</p>
+
+<h1 id="bare-metal-cluster-at-least-for-development">Bare-metal cluster (at least for development)</h1>
+
+<h2 id="other-notes-before-continuing">Other notes before continuing</h2>
+
+<ul>
+  <li>Make sure that <code class="highlighter-rouge">/etc/resolv.conf</code> is correct! Kubernetes will automatically add any domains / search to the kubelet and thus if your /etc/resolv.conf is incorrect, it may screw up and DNS resolution!</li>
+</ul>
+
+<h2 id="deployment">Deployment</h2>
+
+<p>Use kubeadm ansible script I made</p>
+
+<h2 id="helm">Helm</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl <span class="nt">--namespace</span> kube-system create serviceaccount tiller
+kubectl create clusterrolebinding tiller <span class="nt">--clusterrole</span> cluster-admin <span class="nt">--serviceaccount</span><span class="o">=</span>kube-system:tiller
+helm init <span class="nt">--service-account</span> tiller <span class="nt">--upgrade</span>
+</code></pre></div></div>
+
+<h2 id="ingress">Ingress</h2>
+
+<p>Notes: Setup the router to forward port 80 traffic to the Kubernetes master which will handle Ingresses and all!</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm <span class="nb">install </span>stable/nginx-ingress <span class="nt">--namespace</span> nginx-ingress <span class="nt">--set</span> controller.hostNetwork<span class="o">=</span><span class="nb">true</span>,controller.kind<span class="o">=</span>DaemonSet
+</code></pre></div></div>
+
+<p>Deploy, check the EXTERNAL-IP (<code class="highlighter-rouge">kubectl get svc --all-namespaces</code>) and if you’re behind a home network. You’ll have to port forward 80 and 443 to whatever IP address shows under EXTERNAL-IP.</p>
+
+<p>TODO: make  notes regarding how to deploy a wordpress example with nginx + lets encrypt, etc?</p>
+
+<p>When setting an ingress, use a similar template to this:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s">nginx</span>
+    <span class="c1"># Optional!</span>
+    <span class="s">nginx.ingress.kubernetes.io/rewrite-target</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/"</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">cockroach-ingress</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">test.charliedrage.com</span>
+      <span class="na">http</span><span class="pi">:</span>
+        <span class="na">paths</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/foo</span>
+            <span class="na">backend</span><span class="pi">:</span>
+              <span class="na">serviceName</span><span class="pi">:</span> <span class="s">database-cockroachdb-public</span>
+              <span class="na">servicePort</span><span class="pi">:</span> <span class="m">8080</span>
+          <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/bar</span>
+            <span class="na">backend</span><span class="pi">:</span>
+              <span class="na">serviceName</span><span class="pi">:</span> <span class="s">nginx</span>
+              <span class="na">servicePort</span><span class="pi">:</span> <span class="m">80</span>
+</code></pre></div></div>
+
+<h2 id="lets-encrypt">Let’s Encrypt</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm <span class="nb">install</span> <span class="se">\</span>
+  <span class="nt">--name</span> cert-manager <span class="se">\</span>
+  <span class="nt">--namespace</span> kube-system <span class="se">\</span>
+  <span class="nt">--set</span> ingressShim.defaultIssuerName<span class="o">=</span>letsencrypt-staging <span class="se">\</span>
+  <span class="nt">--set</span> ingressShim.defaultIssuerKind<span class="o">=</span>ClusterIssuer <span class="se">\</span>
+  stable/cert-manager <span class="se">\</span>
+  <span class="nt">--version</span> v0.5.2
+</code></pre></div></div>
+
+<p>Setup an issuer:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">certmanager.k8s.io/v1alpha1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ClusterIssuer</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">letsencrypt-staging</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">acme</span><span class="pi">:</span>
+    <span class="c1"># The ACME server URL</span>
+    <span class="na">server</span><span class="pi">:</span> <span class="s">https://acme-staging-v02.api.letsencrypt.org/directory</span>
+    <span class="c1"># Email address used for ACME registration</span>
+    <span class="na">email</span><span class="pi">:</span> <span class="s2">"</span><span class="s">charlie@charliedrage.com"</span>
+    <span class="c1"># Name of a secret used to store the ACME account private key</span>
+    <span class="na">privateKeySecretRef</span><span class="pi">:</span>
+      <span class="na">name</span><span class="pi">:</span> <span class="s">letsencrypt-sec-staging</span>
+    <span class="c1"># Enable HTTP01 validations</span>
+    <span class="na">http01</span><span class="pi">:</span> <span class="pi">{}</span>
+</code></pre></div></div>
+
+<p>Setup ingress:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s">nginx</span>
+    <span class="s">certmanager.k8s.io/cluster-issuer</span><span class="pi">:</span> <span class="s">letsencrypt-staging</span>
+    <span class="s">kubernetes.io/tls-acme</span><span class="pi">:</span> <span class="s">“true”</span>
+    <span class="c1">#nginx.ingress.kubernetes.io/rewrite-target: "/"</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">cockroach-ingress</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">rules</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">test.charliedrage.com</span>
+      <span class="na">http</span><span class="pi">:</span>
+        <span class="na">paths</span><span class="pi">:</span>
+          <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+            <span class="na">backend</span><span class="pi">:</span>
+              <span class="na">serviceName</span><span class="pi">:</span> <span class="s">database-cockroachdb-public</span>
+              <span class="na">servicePort</span><span class="pi">:</span> <span class="m">8080</span>
+  <span class="na">tls</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">secretName</span><span class="pi">:</span> <span class="s">tls-staging-cert</span>
+      <span class="na">hosts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">test.charliedrage.com</span>
+</code></pre></div></div>
+
+<h2 id="loadbalancer">LoadBalancer</h2>
+
+<p>MetalLB. Provide an ARP range, use <code class="highlighter-rouge">loadbalancerIP</code> if you want to specify / pick a specific IP!</p>
+
+<p>Have to create ConfigMap before deployment that uses the <code class="highlighter-rouge">metallb-config</code>.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">ConfigMap</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">metallb-config</span>
+<span class="na">data</span><span class="pi">:</span>
+  <span class="na">config</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">address-pools:</span>
+    <span class="s">- name: default</span>
+      <span class="s">protocol: layer2</span>
+      <span class="s">addresses:</span>
+      <span class="s">- 192.168.1.96-100</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm <span class="nb">install</span> <span class="nt">--name</span> metallb stable/metallb
+</code></pre></div></div>
+
+<h2 id="storage">Storage</h2>
+
+<p>NFS Server + NFS-Client from https://github.com/kubernetes-incubator/external-storage/tree/master/nfs-client for dynamic storage provisioning</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># On the host</span>
+docker run <span class="se">\</span>
+  <span class="nt">-d</span> <span class="se">\</span>
+  <span class="nt">--restart</span><span class="o">=</span>always <span class="se">\</span>
+  <span class="nt">--net</span><span class="o">=</span>host <span class="se">\</span>
+  <span class="nt">--name</span> nfs <span class="se">\</span>
+  <span class="nt">--privileged</span> <span class="se">\</span>
+  <span class="nt">-v</span> /mnt/storage/k8s:/nfsshare <span class="se">\</span>
+  <span class="nt">-e</span> <span class="nv">SHARED_DIRECTORY</span><span class="o">=</span>/nfsshare <span class="se">\</span>
+  cdrage/nfs-server-alpine
+
+<span class="c"># On all servers</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>nfs-common <span class="nt">-y</span> 
+
+<span class="c"># For the nfs-client / provisioner</span>
+helm <span class="nb">install </span>stable/nfs-client-provisioner <span class="nt">-n</span> nfs-client <span class="nt">--set</span> nfs.server<span class="o">=</span>192.168.1.91 <span class="nt">--set</span> nfs.path<span class="o">=</span>/ <span class="nt">--set</span> storageClass.defaultClass<span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+
+<h2 id="monitoring">Monitoring</h2>
+
+<p>Use Prometheus + AlertManager + Grafana</p>
+
+<p>Internal link: prometheus-server.default.svc</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm <span class="nb">install</span> <span class="nt">--name</span> prometheus stable/prometheus
+helm <span class="nb">install</span> <span class="nt">--name</span> grafana stable/grafana
+</code></pre></div></div>
+
+<h1 id="certified-kubernetes-administrator-cka">Certified Kubernetes Administrator (CKA)</h1>
+
+<ul>
+  <li>100% practical, “fixing” broken environments</li>
+  <li>Use lot’s of <code class="highlighter-rouge">kubectl</code></li>
+</ul>
+
+<p>Curriculum:</p>
+
+<p>Application Lifecycle Management 8%
+Installation, Configuration &amp; Validation 12%
+Core Concepts 19%
+Networking 11%
+Scheduling 5%
+Security 12%
+Cluster Maintenance 11%
+Logging / Monitoring 5%
+Storage 7%
+Troubleshooting 10%</p>
+
+<p>Course-outline:</p>
+
+<p>Chapter 1. Course Introduction
+Chapter 2. Basics of Kubernetes
+Chapter 3. Kubernetes Architecture
+Chapter 4. Kubernetes Installation and Configuration
+Chapter 5. Accessing a k8s Cluster and Using the API
+Chapter 6. Replication Controllers and Deployments
+Chapter 7. Volumes and Application Data
+Chapter 8. Services
+Chapter 9. Ingress
+Chapter 10. Additional API Objects
+Chapter 11. Scheduling
+Chapter 12. Logging, Monitoring, and Troubleshooting
+Chapter 13. Third-Party Resources
+Chapter 14. Kubernetes Federation
+Chapter 15. Helm
+Chapter 16. Security</p>
+
+<h1 id="components-of-kubernetes">Components of Kubernetes</h1>
+
+<p>Internal components:</p>
+<ul>
+  <li>kube-proxy: Routing traffic to load-balanced services in the Kubernetes cluster</li>
+  <li>kube-dns: Provides naming and discovery for the services defined</li>
+  <li>kubernetes-dashboard: GUI for Kubernetes</li>
+</ul>
+
+<p>Most common are:</p>
+<ul>
+  <li>Deployment - stateless persistent apps (http servers, stateless: does not require server to retain session information)</li>
+  <li>StatefulSet - stateful persistent apps (databases, stateful: keeping internet state of the server known)</li>
+  <li>Job - run-to-completion apps (batch jobs)</li>
+  <li>Service - set of Pods with a ClusterIP (networking, accessing the application, using loadbalancer’s)</li>
+</ul>
+
+<p>Not-so-common:</p>
+<ul>
+  <li>DaemonSet - ensures that all (or some) nodes run a copy of a Pod</li>
+  <li>CronJob - configuration of a single cronjob (this is in ALPHA)</li>
+</ul>
+
+<p>Manually:</p>
+<ul>
+  <li>Pod - Collection of containers guaranteed to be located on the node and share resources (should be created through Deployment, Job, StatefulSet).</li>
+  <li>ReplicaSet - Same as Replication Controller but has selector support (should be created through Deployment)</li>
+  <li>ReplicationController - Ensures specific number of pod replicas are running at any given time (should be created through Deployment)</li>
+  <li>Container - Only created in the context of a Pod (should be created through Pod)</li>
+</ul>
+
+<h1 id="deployments">Deployments</h1>
+
+<p>Deployment manages ReplicaSets and RC’s manage Pods.</p>
+
+<p>Deployments main feature is the rolling ability for deploying new appliations.</p>
+
+<p>Strategy is used for example to roll out new software. <code class="highlighter-rouge">Recreate</code> and <code class="highlighter-rouge">RollingUpdate</code>.</p>
+
+<p><code class="highlighter-rouge">Recreate</code> simply updated the ReplicaSet it manages to use the new image and terminates all the Pods associated. Potentionally catastrophic. Should only be used for TEST environments.</p>
+
+<p><code class="highlighter-rouge">RollingUpdate</code> Updates a few Pods at a time, moving incrementally until all the Pods are running the new version of the software.</p>
+<ul>
+  <li>Setting <code class="highlighter-rouge">maxSurge</code> to 100% is equivilant to a blue/green deployment. The deployment controller scales the new version up to 100% of the old version. Once new version is healthy, it will scale the old version down to 0%.</li>
+  <li>Setting <code class="highlighter-rouge">minReadySeconds</code> will delay the rollout strategy. The Deployment must wait X seconds after seeing the Pod to become healthy before moving on.</li>
+  <li>Setting the <code class="highlighter-rouge">progressDeadlineSeconds</code> will set a timeout period for rollout, failing after X seconds and reverting back</li>
+</ul>
+
+<p>Example with using “strategy”:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">...</span>
+<span class="na">strategy</span><span class="pi">:</span>
+  <span class="na">rollingUpdate</span><span class="pi">:</span>
+    <span class="c1"># How many extra resources can be created to achieve a rollout. For example, %120 of a 2-container service, so it will scale up to a total of 12 when rolling out </span>
+    <span class="na">maxSurge</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="c1"># Set the max "unavailable" during a rolling update</span>
+    <span class="na">maxUnavailable</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">typeRollingUpdate</span>
+<span class="nn">...</span>
+</code></pre></div></div>
+
+<p>Updating the <code class="highlighter-rouge">change-cause</code> will trigger a new roll-out:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">...</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="s">...</span>
+    <span class="s">template</span><span class="pi">:</span>
+        <span class="na">annotations</span><span class="pi">:</span>
+            <span class="s">kubernetes.io/change-cause</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Update</span><span class="nv"> </span><span class="s">nginx</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">1.9.10"</span>
+<span class="nn">...</span>
+</code></pre></div></div>
+
+<p>You can see revision history (from the change-cause updates) using <code class="highlighter-rouge">kubectl rollout history deployment nginx</code></p>
+
+<p>To roll back a previous release: <code class="highlighter-rouge">kubectl rollout undo deployments nginx</code></p>
+
+<h1 id="statefulsets">StatefulSets</h1>
+
+<p>Similar to ReplicaSet, but have certain unique properties:</p>
+<ul>
+  <li>Each replica gets a persistent hostname with a unique index (database-0, database-1, etc.)</li>
+  <li>Each replica is created in order from lowest to highest (scaling up)</li>
+  <li>When deleted, each replica will be deleted from order highest to lowest (scaling down)</li>
+</ul>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StatefulSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">serviceName</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">mongo"</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">app</span><span class="pi">:</span>  <span class="s">mongo</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">mongodb</span>
+                <span class="s">image</span><span class="pi">:</span>  <span class="s">mongo:3.4.1</span>
+                <span class="s">command</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">mongod</span>
+                <span class="pi">-</span> <span class="s">--replSet</span>
+                <span class="pi">-</span> <span class="s">rs0</span>
+                <span class="na">ports</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span>  <span class="m">27017</span>
+                    <span class="na">name</span><span class="pi">:</span> <span class="s">peer</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mongo</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">27017</span>
+        <span class="na">name</span><span class="pi">:</span> <span class="s">peer</span>
+    <span class="na">clusterIP</span><span class="pi">:</span>  <span class="s">None</span>
+    <span class="na">selector</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span>  <span class="s">mongo</span>
+</code></pre></div></div>
+
+<p>When creating the above example, you’ll not only get <code class="highlighter-rouge">mongo.default.svc.cluster.local</code> as a DNS name, but <code class="highlighter-rouge">mongo-0.mongo.default.svc.cluster.local</code> and <code class="highlighter-rouge">mongo-1.mongo</code>. Each of these resolve to the specific IP address of the replica index in the StatefulSet.</p>
+
+<h1 id="replicasets-todo">ReplicaSets TODO</h1>
+
+<h1 id="services">Services</h1>
+
+<p>Using services to expose your service (frontend):</p>
+<ul>
+  <li>ClusterIP (default, an internal IP)</li>
+  <li>NodePort (expose on each Node’s IP at a static port)</li>
+  <li>LoadBalancer (expose on a cloud provider’s load balancer)</li>
+  <li>ExternalName (maps the content to an external name, requires kube-dns)</li>
+</ul>
+
+<p>The two ways to expose is publically would be NodePorts or LoadBalancer. ClusterIP is internal and ExternalName is Kubernetes 1.7+ with kube-dns.</p>
+
+<h1 id="autoscaling--horizontal-pod-autoscalers">Autoscaling / Horizontal Pod Autoscalers</h1>
+
+<p>Scaling a replica set based on CPU usage:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl autoscale rs kuard <span class="nt">--min</span><span class="o">=</span>2 <span class="nt">--max</span><span class="o">=</span>5 <span class="nt">--cpu-percent</span><span class="o">=</span>80
+</code></pre></div></div>
+
+<p>Retrieving information:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl get hpa
+</code></pre></div></div>
+
+<h1 id="daemonsets">DaemonSets</h1>
+
+<p>Ensures a copy of a Pod is running across a set of nodes in a Kubernetes cluster</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">DaemonSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">fluentd</span>
+    <span class="na">namespace</span><span class="pi">:</span>  <span class="s">kube-system</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span>  <span class="s">fluentd</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">app</span><span class="pi">:</span>  <span class="s">fluentd</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">fluentd</span>
+                <span class="s">image</span><span class="pi">:</span>  <span class="s">fluent/fluentd:v0.14.10</span>
+                <span class="s">resources</span><span class="pi">:</span>
+                    <span class="na">limits</span><span class="pi">:</span>
+                        <span class="na">memory</span><span class="pi">:</span> <span class="s">200Mi</span>
+                    <span class="na">requests</span><span class="pi">:</span>
+                        <span class="na">cpu</span><span class="pi">:</span>  <span class="s">100m</span>
+                        <span class="na">memory</span><span class="pi">:</span> <span class="s">200Mi</span>
+                <span class="na">volumeMounts</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlog</span>
+                    <span class="s">mountPath</span><span class="pi">:</span>  <span class="s">/var/log</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlibdockercontainers</span>
+                    <span class="s">mountPath</span><span class="pi">:</span>  <span class="s">/var/lib/docker/containers</span>
+                    <span class="s">readOnly</span><span class="pi">:</span> <span class="no">true</span>
+            <span class="na">terminationGracePeriodSeconds</span><span class="pi">:</span>  <span class="m">30</span>
+            <span class="na">volumes</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlog</span>
+                <span class="s">hostPath</span><span class="pi">:</span>
+                    <span class="na">path</span><span class="pi">:</span> <span class="s">/var/log</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">varlibdockercontainers</span>
+                <span class="s">hostPath</span><span class="pi">:</span>
+                    <span class="na">path</span><span class="pi">:</span> <span class="s">/var/lib/docker/containers</span>
+</code></pre></div></div>
+
+<p>Limiting to a specific node:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl label nodes k0-default-pool-35609c18-z7tb <span class="nv">ssd</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s2">"</span><span class="s">DaemonSet"</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span>  <span class="s">nginx</span>
+        <span class="na">ssd</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">true"</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">nginx-fast-storage</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">app</span><span class="pi">:</span>  <span class="s">nginx</span>
+                <span class="na">ssd</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">true"</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">nodeSelector</span><span class="pi">:</span>
+                <span class="na">ssd</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">true"</span>
+            <span class="na">containers</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">nginx</span>
+                    <span class="s">image</span><span class="pi">:</span>  <span class="s">nginx:1.10.0</span>
+</code></pre></div></div>
+
+<h1 id="jobs">Jobs</h1>
+
+<p>Job creates Pods that run until a successful termination (exit with 0). Useful for things such as database migrations or batch jobs.</p>
+
+<p>Job patterns:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Use case</th>
+      <th>Behavior</th>
+      <th>Completions</th>
+      <th>Parallelism</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>One shot</td>
+      <td>Database, migrations</td>
+      <td>Single pod running until completion</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Parallel fixed completions</td>
+      <td>Multiple pods processing a set of work in parallel</td>
+      <td>One or more Pods running one or more times until reaching a fixed completion count</td>
+      <td>1+</td>
+      <td>1+</td>
+    </tr>
+    <tr>
+      <td>Work queue: parallel jobs</td>
+      <td>Multiple pods processing from a centralized work queue</td>
+      <td>One or more Pods running once until successful termination</td>
+      <td>1</td>
+      <td>2+</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>One shot:</p>
+
+<p>Job controller is responsible for recreating the Pod until a sucessful termination occurs</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">batch/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Job</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">oneshot</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">chapter</span><span class="pi">:</span>  <span class="s">jobs</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="c1"># To use parallelism / completions</span>
+    <span class="c1"># parallelism: 5</span>
+    <span class="c1"># completions: 10</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">chapter</span><span class="pi">:</span>  <span class="s">jobs</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">kuard</span>
+                <span class="s">image</span><span class="pi">:</span>  <span class="s">gcr.io/kuar-demo/kuard-amd64:1</span>
+                <span class="s">imagePullPolicy</span><span class="pi">:</span>  <span class="s">Always</span>
+                <span class="s">args</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s2">"</span><span class="s">--keygen-enable"</span>
+                <span class="pi">-</span> <span class="s2">"</span><span class="s">--keygen-exit-on-complete"</span>
+                <span class="pi">-</span> <span class="s2">"</span><span class="s">--keygen-num-to-gen=10"</span>
+            <span class="na">restartPolicy</span><span class="pi">:</span>  <span class="s">OnFailure</span>
+</code></pre></div></div>
+
+<h1 id="pods">Pods</h1>
+
+<p>When you first delete a pod, there is a grace period (default 30 seconds) which allows the pod to complete any pending requests.</p>
+
+<p>Using port forwarding to access a specific pod:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl port-forward kuard 8080:8080
+</code></pre></div></div>
+
+<h1 id="namespaces">Namespaces</h1>
+
+<p>To set your own context:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Using your own namespace</span>
+kubectl config set-context my-context <span class="nt">--namespace</span><span class="o">=</span>mystuff
+
+<span class="c"># Set your context</span>
+kubectl config use-context my-context
+</code></pre></div></div>
+
+<h1 id="debugging-commands">Debugging commands</h1>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl logs &lt;pod-name&gt;
+kubectl <span class="nb">exec</span> <span class="nt">-it</span> &lt;pod-name&gt; <span class="nt">--</span> bash
+kubectl <span class="nb">cp</span> &lt;pod-name&gt;:/path/to/remote/file /path/to/local/file
+</code></pre></div></div>
+
+<h1 id="health-checks">Health Checks</h1>
+
+<p>Liveness: Checks to see if it works
+Readiness: When a container is ready to serve requests</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">kuard</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span>  <span class="s">gcr.io/kuar-demo/kuard-amd64:1</span>
+            <span class="s">name</span><span class="pi">:</span> <span class="s">kuard</span>
+            <span class="s">livenessProbe</span><span class="pi">:</span>
+                <span class="na">httpGet</span><span class="pi">:</span>
+                    <span class="na">path</span><span class="pi">:</span> <span class="s">/healthy</span>
+                    <span class="na">port</span><span class="pi">:</span> <span class="m">8080</span>
+                <span class="na">initialDelaySeconds</span><span class="pi">:</span>  <span class="m">5</span>
+                <span class="na">timeoutSeconds</span><span class="pi">:</span> <span class="m">1</span>
+                <span class="na">periodSeconds</span><span class="pi">:</span>  <span class="m">10</span>
+                <span class="na">failureThreshold</span><span class="pi">:</span> <span class="m">3</span>
+          <span class="err">  </span><span class="na">ports</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span>  <span class="m">8080</span>
+                    <span class="na">name</span><span class="pi">:</span> <span class="s">http</span>
+                    <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+</code></pre></div></div>
+
+<h1 id="resources">Resources</h1>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">...</span>
+<span class="na">resources</span><span class="pi">:</span>
+  <span class="na">requests</span><span class="pi">:</span>
+      <span class="na">cpu</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">500m"</span>
+      <span class="na">memory</span><span class="pi">:</span> <span class="s2">"</span><span class="s">128Mi"</span>
+<span class="nn">...</span>
+</code></pre></div></div>
+
+<h1 id="labels-and-selectors">Labels and Selectors</h1>
+
+<p>Identify and group objects in a Kubernetes cluster.</p>
+
+<p>Update labels on any object:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Add</span>
+kubectl label pods bar <span class="nv">color</span><span class="o">=</span>red
+
+<span class="c"># Remove</span>
+kubectl label pods bar <span class="nt">-color</span>
+</code></pre></div></div>
+
+<p>Used to map system objects. Example labels:</p>
+<ul>
+  <li>“release” : “stable”, “release”: “canary”</li>
+</ul>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"labels"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"key1"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"value1"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"key2"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"value2"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"selector"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"component"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"redis"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h1 id="annotations">Annotations</h1>
+
+<p>Attach non-identifying metadata to objects. So tools or libraries can retrieve it.</p>
+
+<p>Primary use-case would be for rolling deployments. Annoyations are used to track rollout status and provide necessary information required to roll back a deployment.</p>
+
+<p>“namespace” part of the key is important.
+examples: <code class="highlighter-rouge">deployment.kubernetes.io/revision</code> or <code class="highlighter-rouge">kubernetes.io/change-cause</code></p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"annotations"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"key1"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"value1"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"key2"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s2">"value2"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h1 id="endpoints--service-discovery">Endpoints / Service Discovery</h1>
+
+<p>Service DNS example:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alpaca-prod.default.svc.cluster.local.
+</code></pre></div></div>
+
+<p>alpaca-prod: name of the service
+default: namespace
+svc: recognizing it is a service
+cluster.local: it’s part of the cluster</p>
+
+<p>Cluster IP addresses change. Endpoints are created in order to track said change. For every Service object, Kubernetes creates an Endpoints object that contains the IP addresses for that service.</p>
+
+<p>Although based on an older implementation, there are certain environment variables that are injected into the pod during start-up, ex:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># The ones mainly used
+ALPACA_PROD_SERVICE_HOST 10.115.245.13
+ALPACA_PROD_SERVICE_PORT 8080
+
+# Other
+ALPACA_PROD_PORT tcp://10.115.245.13:8080
+ALPACA_PROD_PORT_8080_TCP tcp://10.115.245.13:8080
+ALPACA_PROD_PORT_8080_TCP_ADDR 10.115.245.13
+ALPACA_PROD_PORT_8080_TCP_PORT 8080
+ALPACA_PROD_PORT_8080_TCP_PROTO tcp
+</code></pre></div></div>
+
+<p>Custom service discovery / DNS name:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">external-database</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">type</span><span class="pi">:</span> <span class="s">ExternalName</span>
+    <span class="na">externalName</span><span class="pi">:</span> <span class="s2">"</span><span class="s">database.company.com</span>
+</code></pre></div></div>
+
+<p>This will automatically resolve queries to database.svc.default.cluster to database.company.com.</p>
+
+<p>Mapping to an IP address:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">external-ip-database</span>
+<span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Endpoints</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">external-ip-database</span>
+<span class="na">subsets</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">addresses</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">ip</span><span class="pi">:</span> <span class="s">192.168.0.1</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
+</code></pre></div></div>
+
+<h1 id="configmaps--secrets">ConfigMaps &amp; Secrets</h1>
+
+<p>ConfigMaps:</p>
+
+<p>ConfigMaps allows variables to be defined in a different file</p>
+
+<p>Example using ConfigMaps from configMap as well as a volume:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">kuard-config</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">containers</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">test-container</span>
+            <span class="s">image</span><span class="pi">:</span>  <span class="s">gcr.io/kuar-demo/kuard-amd64:1</span>
+            <span class="s">imagePullPolicy</span><span class="pi">:</span>  <span class="s">Always</span>
+            <span class="s">command</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s2">"</span><span class="s">/kuard"</span>
+                <span class="pi">-</span> <span class="s2">"</span><span class="s">$(EXTRA_PARAM)"</span>
+          <span class="err">  </span><span class="na">env</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">ANOTHER_PARAM</span>
+                    <span class="s">valueFrom</span><span class="pi">:</span>
+                        <span class="na">configMapKeyRef</span><span class="pi">:</span>
+                            <span class="na">name</span><span class="pi">:</span> <span class="s">my-config</span>
+                            <span class="na">key</span><span class="pi">:</span>  <span class="s">another-param</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">EXTRA_PARAM</span>
+                    <span class="s">valueFrom</span><span class="pi">:</span>
+                        <span class="na">configMapKeyRef</span><span class="pi">:</span>
+                            <span class="na">name</span><span class="pi">:</span> <span class="s">my-config</span>
+                            <span class="na">key</span><span class="pi">:</span>  <span class="s">extra-param</span>
+            <span class="na">volumeMounts</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">config-volume</span>
+                    <span class="s">mountPath</span><span class="pi">:</span>  <span class="s">/config</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">config-volume</span>
+            <span class="s">configMap</span><span class="pi">:</span>
+                <span class="na">name</span><span class="pi">:</span> <span class="s">my-config</span>
+    <span class="na">restartPolicy</span><span class="pi">:</span>  <span class="s">Never</span>
+</code></pre></div></div>
+
+<p>Secrets:</p>
+
+<p>Base64 encoded secrets. Can be used within a container through volume.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"volumes"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w">
+  </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"foo"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"secret"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"secretName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mysecret"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}]</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Create a secret through CLI:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"admin"</span> <span class="o">&gt;</span> ./username.txt
+<span class="nv">$ </span><span class="nb">echo</span> <span class="nt">-n</span> <span class="s2">"1f2d1e2e67df"</span> <span class="o">&gt;</span> ./password.txt
+<span class="nv">$ </span>kubectl create secret generic db-user-pass <span class="nt">--from-file</span><span class="o">=</span>./username.txt <span class="nt">--from-file</span><span class="o">=</span>./password.txt
+</code></pre></div></div>
+
+<p>Or YAML:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Secret</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">mysecret</span>
+<span class="na">type</span><span class="pi">:</span> <span class="s">Opaque</span>
+<span class="na">data</span><span class="pi">:</span>
+  <span class="na">username</span><span class="pi">:</span> <span class="s">YWRtaW4=</span>
+  <span class="na">password</span><span class="pi">:</span> <span class="s">MWYyZDFlMmU2N2Rm</span>
+</code></pre></div></div>
+
+<p>Example of using a secret volume:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">kind</span><span class="pi">:</span> <span class="s">Secret</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">dotfile-secret</span>
+<span class="na">data</span><span class="pi">:</span>
+  <span class="s">.secret-file</span><span class="pi">:</span> <span class="s">dmFsdWUtMg0KDQo=</span>
+<span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Pod</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">secret-dotfiles-pod</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">volumes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">secret-volume</span>
+    <span class="na">secret</span><span class="pi">:</span>
+      <span class="na">secretName</span><span class="pi">:</span> <span class="s">dotfile-secret</span>
+  <span class="na">containers</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">dotfile-test-container</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">gcr.io/google_containers/busybox</span>
+    <span class="na">command</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">ls</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">-l"</span>
+    <span class="pi">-</span> <span class="s2">"</span><span class="s">/etc/secret-volume"</span>
+    <span class="na">volumeMounts</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">secret-volume</span>
+      <span class="na">readOnly</span><span class="pi">:</span> <span class="no">true</span>
+      <span class="na">mountPath</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/etc/secret-volume"</span>
+</code></pre></div></div>
+
+<h1 id="ingresses">Ingresses</h1>
+
+<p>Soo… Essentially the absolute end-point to access services publically.</p>
+
+<p>For GKE, this is setup automatically (LoadBalancer). However, for bare-metal, you’ll have to use Traefik (which is pretty easy).</p>
+
+<p>This only supports http.</p>
+
+<p>Here’s an example:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Ingress</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">hello-world</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+  <span class="c1">#  annotations:</span>
+  <span class="c1">#  traefik.frontend.rule.type: PathPrefixStrip</span>
+  <span class="na">annotations</span><span class="pi">:</span>
+    <span class="s">kubernetes.io/ingress.class</span><span class="pi">:</span> <span class="s">traefik</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">rules</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">host</span><span class="pi">:</span> <span class="s">foo.bar.com</span>
+    <span class="na">http</span><span class="pi">:</span>
+      <span class="na">paths</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">path</span><span class="pi">:</span> <span class="s">/</span>
+        <span class="na">backend</span><span class="pi">:</span>
+          <span class="na">serviceName</span><span class="pi">:</span> <span class="s">foobar-gitea</span>
+          <span class="na">servicePort</span><span class="pi">:</span> <span class="m">80</span>
+</code></pre></div></div>
+
+<h1 id="storage-1">Storage</h1>
+
+<p>Creating a PV with NFS:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolume</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">foobar1</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">volume</span><span class="pi">:</span> <span class="s">foobar1</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">accessModes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">ReadWriteOnce</span>
+      <span class="pi">-</span> <span class="s">ReadWriteMany</span>
+    <span class="na">capacity</span><span class="pi">:</span>
+        <span class="na">storage</span><span class="pi">:</span>  <span class="s">50Gi</span>
+    <span class="na">mountOptions</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">hard</span>
+      <span class="pi">-</span> <span class="s">nfsvers=4.1</span>
+    <span class="na">nfs</span><span class="pi">:</span>
+        <span class="na">server</span><span class="pi">:</span> <span class="s">192.168.7.177</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/k8s/foobar1/"</span>
+    <span class="na">persistentVolumeReclaimPolicy</span><span class="pi">:</span> <span class="s">Recycle</span>
+</code></pre></div></div>
+
+<p>Creating a MYSQL with storage:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolume</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">database</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">volume</span><span class="pi">:</span> <span class="s">my-volume</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">capacity</span><span class="pi">:</span>
+        <span class="na">storage</span><span class="pi">:</span>  <span class="s">1Gi</span>
+    <span class="na">nfs</span><span class="pi">:</span>
+        <span class="na">server</span><span class="pi">:</span> <span class="s">192.168.0.1</span>
+        <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/exports"</span>
+<span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolumeClaim</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">database</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">requests</span><span class="pi">:</span>
+            <span class="na">storage</span><span class="pi">:</span>  <span class="s">1Gi</span>
+    <span class="na">selector</span><span class="pi">:</span>
+        <span class="na">matchLabels</span><span class="pi">:</span>
+            <span class="na">volume</span><span class="pi">:</span> <span class="s">my-volume</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ReplicaSet</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mysql</span>
+    <span class="c1"># labels  so  that  we  can bind  a Service to  this  Pod</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span>  <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">selector</span><span class="pi">:</span>
+        <span class="na">matchLabels</span><span class="pi">:</span>
+            <span class="na">app</span><span class="pi">:</span>  <span class="s">mysql</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">app</span><span class="pi">:</span>  <span class="s">mysql</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">database</span>
+                <span class="s">image</span><span class="pi">:</span>  <span class="s">mysql</span>
+                <span class="s">resources</span><span class="pi">:</span>
+                    <span class="na">requests</span><span class="pi">:</span>
+                        <span class="na">cpu</span><span class="pi">:</span>  <span class="m">1</span>
+                        <span class="na">memory</span><span class="pi">:</span> <span class="s">2Gi</span>
+                <span class="na">env</span><span class="pi">:</span>
+                <span class="c1"># Environment variables are not a best  practice  for security,</span>
+                <span class="c1"># but we're using them  here  for brevity in  the example.</span>
+                <span class="c1"># See Chapter 11  for better  options.</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MYSQL_ROOT_PASSWORD</span>
+                    <span class="s">value</span><span class="pi">:</span>  <span class="s">some-password-here</span>
+                <span class="na">livenessProbe</span><span class="pi">:</span>
+                    <span class="na">tcpSocket</span><span class="pi">:</span>
+                        <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
+                <span class="na">ports</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span>  <span class="m">3306</span>
+                <span class="na">volumeMounts</span><span class="pi">:</span>
+                    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">database</span>
+                        <span class="s"># /var/lib/mysql  is  where MySQL stores  its databases</span>
+                        <span class="s">mountPath</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">/var/lib/mysql"</span>
+            <span class="na">volumes</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">database</span>
+                <span class="s">persistentVolumeClaim</span><span class="pi">:</span>
+                    <span class="na">claimName</span><span class="pi">:</span>  <span class="s">database</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">mysql</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">3306</span>
+        <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+    <span class="na">selector</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span>  <span class="s">mysql</span>
+</code></pre></div></div>
+
+<p>Creating Dynamic Volume Provisioning:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">storage.k8s.io/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">StorageClass</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">default</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+        <span class="s">storageclass.beta.kubernetes.io/is-default-class</span><span class="pi">:</span> <span class="s2">"</span><span class="s">true"</span>
+    <span class="na">labels</span><span class="pi">:</span>
+        <span class="s">kubernetes.io/cluster-service</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">true"</span>
+<span class="na">provisioner</span><span class="pi">:</span>  <span class="s">kubernetes.io/azure-disk</span>
+<span class="nn">---</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PersistentVolumeClaim</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">my-claim</span>
+    <span class="na">annotations</span><span class="pi">:</span>
+        <span class="c1"># This links it to the above StorageClass  </span>
+        <span class="s">volume.beta.kubernetes.io/storage-class</span><span class="pi">:</span>  <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">accessModes</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="s">ReadWriteOnce</span>
+    <span class="na">resources</span><span class="pi">:</span>
+        <span class="na">requests</span><span class="pi">:</span>
+            <span class="na">storage</span><span class="pi">:</span>  <span class="s">10Gi</span>
+</code></pre></div></div>
+
+<p>A Storage Class will automatically create disk objects, in this case, on the Microsoft Azure Platform.</p>
+
+<h1 id="volumes">Volumes</h1>
+
+<p>Different ways of using volumes with pods (recommended patterns):</p>
+<ul>
+  <li>Communication / synchronization: Syncing between two containers, for example a Git location + site.</li>
+  <li>Cache: using cache (emptyDir)</li>
+  <li>Persistent data</li>
+  <li>Mounting the host filesystem: For example, access block-level access to a device on the host</li>
+</ul>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">volumes</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s2">"</span><span class="s">kuard-data"</span>
+      <span class="na">hostPath</span><span class="pi">:</span>
+          <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/var/lib/kuard"</span>
+</code></pre></div></div>
+
+<p>https://kubernetes.io/docs/concepts/storage/volumes/</p>
+
+<h1 id="examples">Examples</h1>
+
+<h2 id="parse-server">Parse server</h2>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">parse-server</span>
+    <span class="na">namespace</span><span class="pi">:</span>  <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">run</span><span class="pi">:</span>  <span class="s">parse-server</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">parse-server</span>
+                <span class="s">image</span><span class="pi">:</span>  <span class="s">${DOCKER_USER}/parse-server</span>
+                <span class="s">env</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">DATABASE_URI</span>
+                    <span class="s">value</span><span class="pi">:</span>  <span class="s2">"</span><span class="s">mongodb://mongo-0.mongo:27017,</span><span class="se">\
+</span>                        <span class="s">mongo-1.mongo:27017,mongo-2.mongo</span><span class="se">\
+</span>                        <span class="s">:27017/dev?replicaSet=rs0"</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">APP_ID</span>
+                    <span class="s">value</span><span class="pi">:</span>  <span class="s">my-app-id</span>
+                <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">MASTER_KEY</span>
+                    <span class="s">value</span><span class="pi">:</span>  <span class="s">my-master-key</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">parse-server</span>
+    <span class="na">namespace</span><span class="pi">:</span>  <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">ports</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">1337</span>
+        <span class="na">protocol</span><span class="pi">:</span> <span class="s">TCP</span>
+        <span class="na">targetPort</span><span class="pi">:</span> <span class="m">1337</span>
+    <span class="na">selector</span><span class="pi">:</span>
+        <span class="na">run</span><span class="pi">:</span>  <span class="s">parse-server</span>
+</code></pre></div></div>
+
+<h2 id="ghost">Ghost</h2>
+
+<p>Use the configuration file</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">path</span>  <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">path</span><span class="dl">'</span><span class="p">),</span>
+        <span class="nx">config</span><span class="p">;</span>
+<span class="nx">config</span>  <span class="o">=</span> <span class="p">{</span>
+        <span class="na">development</span><span class="p">:</span>  <span class="p">{</span>
+                <span class="na">url</span><span class="p">:</span>  <span class="dl">'</span><span class="s1">http://localhost:2368</span><span class="dl">'</span><span class="p">,</span>
+                <span class="na">database</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="na">client</span><span class="p">:</span> <span class="dl">'</span><span class="s1">sqlite3</span><span class="dl">'</span><span class="p">,</span>
+                        <span class="na">connection</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="na">filename</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GHOST_CONTENT</span><span class="p">,</span>
+                                                                        <span class="dl">'</span><span class="s1">/data/ghost-dev.db</span><span class="dl">'</span><span class="p">)</span>
+                        <span class="p">},</span>
+                        <span class="na">debug</span><span class="p">:</span>  <span class="kc">false</span>
+                <span class="p">},</span>
+                <span class="na">server</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="na">host</span><span class="p">:</span> <span class="dl">'</span><span class="s1">0.0.0.0</span><span class="dl">'</span><span class="p">,</span>
+                        <span class="na">port</span><span class="p">:</span> <span class="dl">'</span><span class="s1">2368</span><span class="dl">'</span>
+                <span class="p">},</span>
+                <span class="na">paths</span><span class="p">:</span>  <span class="p">{</span>
+                        <span class="na">contentPath</span><span class="p">:</span>  <span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GHOST_CONTENT</span><span class="p">,</span>  <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">)</span>
+                <span class="p">}</span>
+        
+</code></pre></div></div>
+
+<p>Configure a configMap</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl apply cm  <span class="nt">--from-file</span> ghost-config.js ghost-config
+</code></pre></div></div>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">extensions/v1beta1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+    <span class="na">name</span><span class="pi">:</span> <span class="s">ghost</span>
+<span class="na">spec</span><span class="pi">:</span>
+    <span class="na">replicas</span><span class="pi">:</span> <span class="na">1   selector</span><span class="pi">:</span>
+        <span class="na">matchLabels</span><span class="pi">:</span>
+            <span class="na">run</span><span class="pi">:</span>  <span class="s">ghost</span>
+    <span class="na">template</span><span class="pi">:</span>
+        <span class="na">metadata</span><span class="pi">:</span>
+            <span class="na">labels</span><span class="pi">:</span>
+                <span class="na">run</span><span class="pi">:</span>  <span class="s">ghost</span>
+        <span class="na">spec</span><span class="pi">:</span>
+            <span class="na">containers</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">image</span><span class="pi">:</span>  <span class="s">ghost</span>
+                <span class="s">name</span><span class="pi">:</span> <span class="s">ghost</span>
+                <span class="s">command</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="s">sh</span>
+                <span class="pi">-</span> <span class="s">-c</span>
+                <span class="pi">-</span> <span class="s">cp  /ghost-config/config.js /var/lib/ghost/config.js</span>
+                    <span class="s">&amp;&amp;  /entrypoint.sh  npm start</span>
+                <span class="na">volumeMounts</span><span class="pi">:</span>
+                <span class="pi">-</span> <span class="na">mountPath</span><span class="pi">:</span>  <span class="s">/ghost-config</span>
+                    <span class="s">name</span><span class="pi">:</span> <span class="s">config</span>
+            <span class="na">volumes</span><span class="pi">:</span>
+            <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">config</span>
+                <span class="s">configMap</span><span class="pi">:</span>
+                    <span class="na">defaultMode</span><span class="pi">:</span>  <span class="m">420</span>
+                    <span class="na">name</span><span class="pi">:</span> <span class="s">ghost-config</span>
+</code></pre></div></div>
+
+<p>Expose “Ghost”:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl expose  deployments ghost <span class="nt">--port</span><span class="o">=</span>2368
+</code></pre></div></div>
+
+<p>Expose / access with proxy:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>kubectl proxy
+</code></pre></div></div>
+
+<h2 id="redis">Redis</h2>
+
+:ET

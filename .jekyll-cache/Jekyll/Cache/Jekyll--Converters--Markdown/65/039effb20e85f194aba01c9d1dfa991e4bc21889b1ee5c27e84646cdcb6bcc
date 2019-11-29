@@ -1,0 +1,243 @@
+I"�Q<p><strong>UPDATE 11/28/2016</strong>: I’d reccomend checking out <a href="https://prometheus.io/">Prometheus</a> instead. A great alternative and really easy to setup (if you know Docker + Docker Compose).</p>
+
+<p>Installing services, reading documentation, deploying on a compatible OS. It’s a bitch. That’s why Docker has gained such popularity within the past couple of years. What started as a simple LXC project erupted into an assortment of different forks and implementations. Want a Platform as a Service that deploys web servers programatically in less than 1,000 lines of code? Use Docker and Go. Why am I saying this? It’s because all it takes is a few lines of text and a download of a repo and your service is up and running, on any OS, on multiple cloud providers.</p>
+
+<h1 id="sensu">Sensu</h1>
+
+<p><img src="/img/sensu.png" alt="Sensu" /></p>
+
+<p>Sensu is a monitoring platform that uses Ruby, RabbitMQ (Erlang) and Redis. It’s similar to Nagios, but uses a Client&lt;-&gt;Server communication that reports back to one another. Clients can be added very easily as well as removed from the chain, checks can be created in any language, and it’s very volatile. It’s an amazing platform and with RabbitMQ it scales quite well. In order to use a Sensu Server you’ll have to install Redis, configure RabbitMQ, setup the actual Sensu Server and (optionally) add your mail and chatops handlers/notifications.  But we’re going to avoid all the nitty gritty and use a Docker container.</p>
+
+<p>Usually in a monitoring platform you want:</p>
+
+<ul>
+  <li>Checks (HDD, RAM, CPU%, etc).</li>
+  <li>Notifications (Slack, Email, Hipchat, Campfire, etc)</li>
+  <li>Metrics (Graphite, graphs, woo!)</li>
+</ul>
+
+<p>With a few modifications of some JSON files, we’ll have the server up and running immediately.</p>
+
+<p>In order to ease this transition into building a Dockerfile container, we’ll run through this step-by-step.</p>
+
+<h1 id="docker">Docker</h1>
+
+<p>The Docker repo is located here <a href="https://github.com/charliedrage/docker-sensu-server">github.com/charliedrage/docker-sensu-server</a>.</p>
+
+<p>We’ll be going over the Dockerfile and /files folder.</p>
+
+<h2 id="dockerfile">dockerfile</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>FROM centos:centos6
+
+MAINTAINER Charlie Drage &lt;charlie@charliedrage.com&gt;
+
+<span class="c"># Basic packages</span>
+RUN rpm <span class="nt">-Uvh</span> http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+RUN yum <span class="nb">install</span> <span class="nt">-y</span> passwd <span class="nb">sudo </span>git wget openssl openssh openssh-server openssh-clients which <span class="nb">tar</span>
+
+<span class="c"># Create the sensu user</span>
+RUN useradd sensu
+RUN <span class="nb">echo</span> <span class="s2">"sensu"</span> | passwd sensu <span class="nt">--stdin</span>
+RUN <span class="nb">sed</span> <span class="nt">-ri</span> <span class="s1">'s/UsePAM yes/#UsePAM yes/g'</span> /etc/ssh/sshd_config
+RUN <span class="nb">sed</span> <span class="nt">-ri</span> <span class="s1">'s/#UsePAM no/UsePAM no/g'</span> /etc/ssh/sshd_config
+RUN <span class="nb">echo</span> <span class="s2">"sensu ALL=(ALL) ALL"</span> <span class="o">&gt;&gt;</span> /etc/sudoers.d/sensu
+
+<span class="c"># Install ruby</span>
+RUN gpg <span class="nt">--keyserver</span> hkp://keys.gnupg.net <span class="nt">--recv-keys</span> D39DC0E3
+RUN /bin/bash <span class="nt">-l</span> <span class="nt">-c</span> <span class="s2">"curl -L get.rvm.io | bash -s stable"</span>
+RUN /bin/bash <span class="nt">-l</span> <span class="nt">-c</span> <span class="s2">"rvm install 2.1"</span>
+RUN /bin/bash <span class="nt">-l</span> <span class="nt">-c</span> <span class="s2">"echo 'gem: --no-ri --no-rdoc' &gt; ~/.gemrc"</span>
+RUN /bin/bash <span class="nt">-l</span> <span class="nt">-c</span> <span class="s2">"gem install bundler --no-ri --no-rdoc"</span>
+
+<span class="c"># Redis</span>
+RUN yum <span class="nb">install</span> <span class="nt">-y</span> redis
+
+<span class="c"># SSL key generation</span>
+RUN git clone git://github.com/joemiller/joemiller.me-intro-to-sensu.git
+RUN <span class="nb">cd </span>joemiller.me-intro-to-sensu/<span class="p">;</span> ./ssl_certs.sh clean <span class="o">&amp;&amp;</span> ./ssl_certs.sh generate
+
+<span class="c"># RabbitMQ</span>
+RUN yum <span class="nb">install</span> <span class="nt">-y</span> erlang
+RUN rpm <span class="nt">--import</span> http://www.rabbitmq.com/rabbitmq-signing-key-public.asc
+RUN rpm <span class="nt">-Uvh</span> http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.4/rabbitmq-server-3.1.4-1.noarch.rpm
+RUN <span class="nb">mkdir</span> /etc/rabbitmq/ssl
+RUN <span class="nb">cp</span> /joemiller.me-intro-to-sensu/server_cert.pem /etc/rabbitmq/ssl/cert.pem
+RUN <span class="nb">cp</span> /joemiller.me-intro-to-sensu/server_key.pem /etc/rabbitmq/ssl/key.pem
+RUN <span class="nb">cp</span> /joemiller.me-intro-to-sensu/testca/cacert.pem /etc/rabbitmq/ssl/
+ADD ./files/rabbitmq.config /etc/rabbitmq/
+RUN rabbitmq-plugins <span class="nb">enable </span>rabbitmq_management
+
+<span class="c"># Sensu server</span>
+ADD ./files/sensu.repo /etc/yum.repos.d/
+RUN yum <span class="nb">install</span> <span class="nt">-y</span> sensu
+ADD ./files/config.json /etc/sensu/
+ADD ./files/checks.json /etc/sensu/conf.d/
+RUN <span class="nb">mkdir</span> <span class="nt">-p</span> /etc/sensu/handlers
+ADD ./files/handlers /etc/sensu/handlers/
+RUN <span class="nb">mkdir</span> <span class="nt">-p</span> /etc/sensu/ssl
+RUN <span class="nb">cp</span> /joemiller.me-intro-to-sensu/client_cert.pem /etc/sensu/ssl/cert.pem
+RUN <span class="nb">cp</span> /joemiller.me-intro-to-sensu/client_key.pem /etc/sensu/ssl/key.pem
+
+<span class="c"># Sensu dependancies / plugins</span>
+RUN /bin/bash <span class="nt">-l</span> <span class="nt">-c</span> <span class="s2">"/opt/sensu/embedded/bin/gem install sensu-plugin pony"</span>
+
+<span class="c"># Uchiwa sensu control panel</span>
+RUN yum <span class="nb">install</span> <span class="nt">-y</span> uchiwa
+ADD ./files/uchiwa.json /etc/sensu/
+
+<span class="c"># Supervisord</span>
+RUN wget http://peak.telecommunity.com/dist/ez_setup.py<span class="p">;</span>python ez_setup.py
+RUN easy_install supervisor
+ADD files/supervisord.conf /etc/supervisord.conf
+
+<span class="c"># Flap SSH to enable connectivity</span>
+RUN /etc/init.d/sshd start
+RUN /etc/init.d/sshd stop
+
+<span class="c"># Sensu, uchiwa, RabbitMQ ports + 80/8080/443 for mail/slacker communication</span>
+EXPOSE 22 587 3000 4567 5671 15672 2003 80 8080 443
+
+CMD <span class="o">[</span><span class="s2">"/usr/bin/supervisord"</span><span class="o">]</span>
+</code></pre></div></div>
+
+<p>That’s the entirety of the Dockerfile. All other configuration files are located within /files. If you know a bit of Docker the file is self-explanitory. Although a bit against Docker standards, we containerize an SSH instance so we may connect to the container via:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh sensu@localhost <span class="nt">-p</span> 10022
+password: sensu
+</code></pre></div></div>
+
+<p>This allows the ability to SSH into the container and view not only the logs of /var/log/sensu but whether or not the sensu-server and sensu-api are up or not.</p>
+
+<p>What we will be focusing on in this post is the contents of the /files/ folder</p>
+
+<h2 id="filesconfigjson">files/config.json</h2>
+
+<p>This is your bread-and-butter. Any notitifcations you wish to send from the result of your Sensu checking your clients will be sent using these credentials.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="nl">"ponymailer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"authenticate"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"username"</span><span class="p">:</span><span class="s2">"example@gmail.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"tls"</span><span class="p">:</span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"port"</span><span class="p">:</span><span class="s2">"587"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"fromname"</span><span class="p">:</span><span class="s2">"Network"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"hostname"</span><span class="p">:</span><span class="s2">"smtp.gmail.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"password"</span><span class="p">:</span><span class="s2">"password"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"from"</span><span class="p">:</span><span class="s2">"network@gmail.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"recipients"</span><span class="p">:[</span><span class="w"> 
+      </span><span class="s2">"admin@gmail.com"</span><span class="w">
+      </span><span class="p">]</span><span class="w">
+  </span><span class="p">}</span><span class="err">,</span><span class="w">
+</span></code></pre></div></div>
+<p>Edit the “ponymailer” settings to your SMTP credentials. In our usage case we used GMail. Keep in mind that GMail limits emails sent to 500 messages / day.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="nl">"slack"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"token"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mykey"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"team_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"myteam"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"channel"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#general"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"bot_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"sensu"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"message_prefix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@channel"</span><span class="w">
+  </span><span class="p">}</span><span class="err">,</span><span class="w">
+</span></code></pre></div></div>
+
+<p>In our case, we use Slack for our ChatOps. We like to have any notifications  sent to both our NOC email and Slack channel. Enter your token key as well as your username and what channel you’d like to send notifications to.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="nl">"handlers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"default"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"set"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"handlers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"mailer"</span><span class="p">,</span><span class="w"> </span><span class="s2">"slack"</span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"mailer"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pipe"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/opt/sensu/embedded/bin/ruby /etc/sensu/handlers/ponymailer.rb"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"slack"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pipe"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/opt/sensu/embedded/bin/ruby /etc/sensu/handlers/slack.rb"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"graphite"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pipe"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/opt/sensu/embedded/bin/ruby /etc/sensu/handlers/graphite-tcp.rb"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We configured our default handler to send notifications to both Email and ChatOps. This can be easily modified to add other services such as HipChat and PagerDuty.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w">  </span><span class="nl">"graphite"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"server"</span><span class="p">:</span><span class="s2">"graphite.domain.com"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"port"</span><span class="p">:</span><span class="s2">"2003"</span><span class="w">
+  </span><span class="p">}</span><span class="err">,</span><span class="w">
+</span></code></pre></div></div>
+
+<p>We use Graphite for our metric collection system. It’s light-weight, processes metrics quickly, and it’s scalable. We use another Docker container [github.com/charliedrage/docker-graphite][graphite] to view and store our data.</p>
+
+<h2 id="fileschecksjson">files/checks.json</h2>
+
+<p>This is our Sensu json file for our checks. This is where you will add checks that will be execute on each client.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"checks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"cpu_check"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"handlers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"default"</span><span class="p">],</span><span class="w">
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/etc/sensu/plugins/check-cpu.rb -w 90"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"subscribers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"node"</span><span class="p">,</span><span class="w"> </span><span class="s2">"self"</span><span class="p">,</span><span class="w"> </span><span class="s2">"backup"</span><span class="p">]</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"eth_metrics"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"metric"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"handlers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"graphite"</span><span class="p">],</span><span class="w"> 
+      </span><span class="nl">"command"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/etc/sensu/plugins/metrics-net.rb --scheme :::name:::.net"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"interval"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"subscribers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"node"</span><span class="p">,</span><span class="s2">"backup"</span><span class="w"> </span><span class="p">]</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span></code></pre></div></div>
+
+<p>In this case we are collecting metrics on our network interface and issuing a check on our CPU. This can be easily expanded. For our servers, we have over 20 checks and 10 different metric collection methods. As long as you have the file listed in the etc/sensu/plugins folder of your sensu-client (the server you’re checking), it’ll be executed and the results passed to the Sensu server (and if it’s a metric, to your graphite server).</p>
+
+<h2 id="fileshandlers-folder">files/handlers folder</h2>
+
+<p>Within the /files/handlers folder are three different .rb files, [slacker, graphite-tcp, pony]. Each handler takes the configuration settings from the config.json folder (in our case, where we specified our mail credentials, slack key and graphite location). And uses them to send whatever information has been piped in to the designated location. If you wish to add an alternative ChatOps service or perhaps PagerDuty, a plugin can be easily added to the files/handlers/ folder and the configuration settings within config.json.</p>
+
+<h1 id="building-and-deploying-the-sensu-server">Building and deploying the Sensu Server</h1>
+
+<ul>
+  <li>RabbitMQ Server: localhost:5671</li>
+  <li>RabbitMQ Management: localhost:15672</li>
+  <li>Uchiwa (Sensu control panel): localhost:3000</li>
+  <li>SSH sensu@localhost:10022</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone charliedrage/docker-sensu-server
+<span class="nb">cd </span>docker-sensu-server
+
+<span class="c"># Edit the files before building! /files/</span>
+docker build <span class="nt">-t</span> sensu/sensu <span class="nb">.</span>
+
+<span class="c"># Run</span>
+docker run <span class="nt">-d</span> <span class="nt">-name</span> sensu <span class="nt">-p</span> 10022:22 <span class="nt">-p</span> 3000:3000 <span class="nt">-p</span> 4567:4567 <span class="nt">-p</span> 5671:5671 <span class="nt">-p</span> 15672:15672 sensu/sensu
+
+<span class="c"># To SSH into your sensu container (password: sensu)</span>
+ssh sensu@localhost <span class="nt">-p</span> 10022
+</code></pre></div></div>
+
+<h1 id="deploying-the-graphite-server">Deploying the graphite server</h1>
+
+<p>No configuration is needed for the Graphite server. However. By default. It will log metrics that span every 60 seconds for a period of 90 days. This can be edited in the storage-schemas.conf file.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Build your own</span>
+git clone github.com/charliedrage/docker-graphite
+docker build <span class="nt">-t</span> graphite/graphite <span class="nb">.</span>
+docker run <span class="nt">-d</span> <span class="nt">--name</span> graphite <span class="nt">-p</span> 80:80 <span class="nt">-p</span> 2003:2003 <span class="nt">-p</span> 8125:8125/udp graphite/graphite
+
+<span class="c"># Run straight from the hub</span>
+docker run <span class="nt">-d</span> <span class="nt">--name</span> graphite <span class="nt">-p</span> 80:80 <span class="nt">-p</span> 2003:2003 <span class="nt">-p</span> 8125:8125/udp charliedrage/graphite
+</code></pre></div></div>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>After installation and deployment of both sensu and graphite, you should see clients propagate within localhost:3000 under uchiwa and metrics appear within graphite localhost:80</p>
+
+:ET

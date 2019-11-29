@@ -1,0 +1,105 @@
+I"�<p>The release of <strong>Docker 1.9</strong> has brought native multi-host networking into the mix. This changes <em>a lot</em> in the container orchestration world. Ever try to install Kubernetes on a bare metal server without already-implemented private networking? It’s a pain in the ass.</p>
+
+<p>1.9 also adds libnetwork, changing how Docker will communicate to neighbouring containers. Soon  <strong>“links”</strong> or <strong>–link</strong> will be <a href="https://docs.docker.com/engine/userguide/networking/dockernetworks/">deprecated</a> in favour of Docker’s internal networking.</p>
+
+<p>Instead of:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-d</span> mysql
+docker run <span class="nt">--link</span>:mysql:db <span class="nt">-d</span> nginx
+</code></pre></div></div>
+
+<p>It will eventually be:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker network create <span class="nt">--driver</span> bridge isolated_nw
+docker run <span class="nt">--net</span><span class="o">=</span>isolated_nw <span class="nt">-d</span> nginx
+docker run <span class="nt">--net</span><span class="o">=</span>isolated_nw <span class="nt">-d</span> mysql
+</code></pre></div></div>
+
+<p>Making (imo) inter-container communication <em>much</em> easier.</p>
+
+<p>Oh, and hostnames resolve too. <strong>–name=awesomeapp</strong> and it’ll resolve <strong>awesomeapp</strong> within the network.</p>
+
+<p>Anyways! Back to multi-host networking and setting this shit up between two different hosts.</p>
+
+<p>The nitty gritty of it is that Docker is using VXLAN in order to tunnel your connections between hosts. A Key-Value server is thrown into the mix to keep everything together. As of right now, either: Consul, Zookeeper or Etcd is supported. When specifying the <strong>–driver overlay</strong> option when creating the network, Docker tunnels these connections between hosts in order to communicate on the same overlay network.</p>
+
+<p>Enough with the talk, let’s get to the examples!</p>
+
+<p>There’s two ways to deploy an overlay multi-host network, either:</p>
+
+<ol>
+  <li>
+    <p>You deploy using <a href="https://github.com/dave-tucker/docker-network-demos/blob/master/multihost-local.sh">docker-machine</a>.</p>
+  </li>
+  <li>
+    <p>You manually deploy a Consul server and input into your Docker config:</p>
+  </li>
+</ol>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>--cluster-store=PROVIDER://URL
+--cluster-advertise=HOST_IP
+</code></pre></div></div>
+
+<p>We’ll focus on using docker-machine for deployment, if you’d like to configure it manually visit the official <a href="https://docs.docker.com/engine/userguide/networking/dockernetworks/">docs</a>.</p>
+
+<h1 id="now-lets-set-it-up">Now let’s set it up!</h1>
+
+<h2 id="define-the-servers-youre-using">Define the servers you’re using</h2>
+
+<p><em>Let’s assume you have root access to your server and SSH running.</em></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">IP1</span><span class="o">=</span>10.10.10.1 <span class="c"># our consul server</span>
+<span class="nb">export </span><span class="nv">IP2</span><span class="o">=</span>10.10.10.2 <span class="c"># machine 1</span>
+<span class="nb">export </span><span class="nv">IP3</span><span class="o">=</span>10.10.10.3 <span class="c"># machine 2</span>
+</code></pre></div></div>
+
+<h2 id="first-lets-get-our-consul-server-up-and-running">First, let’s get our Consul server up and running.</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-machine create <span class="se">\</span>
+    <span class="nt">-d</span> generic <span class="se">\</span>
+    <span class="nt">--generic-ip-address</span> <span class="nv">$IP1</span> <span class="se">\</span>
+    consul
+
+docker <span class="si">$(</span>docker-machine config consul<span class="si">)</span> run <span class="nt">-d</span> <span class="se">\</span>
+    <span class="nt">-p</span> <span class="s2">"8500:8500"</span> <span class="se">\</span>
+    <span class="nt">-h</span> <span class="s2">"consul"</span> <span class="se">\</span>
+    progrium/consul <span class="nt">-server</span> <span class="nt">-bootstrap</span>
+</code></pre></div></div>
+
+<h2 id="our-first-multi-host-server">Our first multi-host server</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-machine create <span class="se">\</span>
+    <span class="nt">-d</span> generic <span class="se">\</span>
+    <span class="nt">--generic-ip-address</span> <span class="nv">$IP2</span> <span class="se">\</span>
+    <span class="nt">--engine-opt</span><span class="o">=</span><span class="s2">"cluster-store=consul://</span><span class="si">$(</span>docker-machine ip consul<span class="si">)</span><span class="s2">:8500"</span> <span class="se">\</span>
+    <span class="nt">--engine-opt</span><span class="o">=</span><span class="s2">"cluster-advertise=eth0:0"</span> <span class="se">\</span>
+    machine1
+</code></pre></div></div>
+
+<h2 id="our-second-multi-host-server">Our second multi-host server</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-machine create <span class="se">\</span>
+    <span class="nt">-d</span> generic <span class="se">\</span>
+    <span class="nt">--generic-ip-address</span> <span class="nv">$IP3</span> <span class="se">\</span>
+    <span class="nt">--engine-opt</span><span class="o">=</span><span class="s2">"cluster-store=consul://</span><span class="si">$(</span>docker-machine ip consul<span class="si">)</span><span class="s2">:8500"</span> <span class="se">\</span>
+    <span class="nt">--engine-opt</span><span class="o">=</span><span class="s2">"cluster-advertise=eth0:0"</span> <span class="se">\</span>
+    machine2
+</code></pre></div></div>
+
+<h2 id="use-docker-machine-env-variables-and-setup-the-overlay-network">Use docker-machine env variables and setup the overlay network</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="si">$(</span>docker-machine config machine1<span class="si">)</span> network create <span class="nt">-d</span> overlay myapp
+docker <span class="si">$(</span>docker-machine config machine2<span class="si">)</span> network <span class="nb">ls</span>
+</code></pre></div></div>
+
+<p>Use <strong>docker network ls</strong> on any host and you’ll see that the overlay network is now available as <strong>myapp</strong>. This network is available to all of those clustered to the same KV (Consul) server.</p>
+
+<h2 id="now-use-containers-and-the-overlay-network">Now use containers and the overlay network!</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker <span class="si">$(</span>docker-machine config machine1<span class="si">)</span> run <span class="nt">-d</span> <span class="nt">--name</span><span class="o">=</span>web <span class="nt">--net</span><span class="o">=</span>myapp nginx
+docker <span class="si">$(</span>docker-machine config machine1<span class="si">)</span> run <span class="nt">-d</span> <span class="nt">--name</span><span class="o">=</span>db <span class="nt">--net</span><span class="o">=</span>myapp mysql
+
+</code></pre></div></div>
+
+<p>That’s it :)</p>
+:ET

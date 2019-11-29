@@ -1,0 +1,16 @@
+I"�<p>Working with kvm/qemu involves using libguestfs-tools sometimes in order to prep the deployment of servers. I’ve come across the issue of read/writing to FreeBSD partitions using the mount tool. Even though it’s 2015, the Linux Kernel still has experimental write support for UFS. Here’s how to recompile your kernel with ufs write support.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-get <span class="nb">install </span>linux-source kernel-package
+<span class="nb">cd</span> /usr/src
+bzip2 <span class="nt">-dc</span> linux-source-x.y.z.tar.bz2 | <span class="nb">tar </span>xf -
+<span class="nb">cd </span>linux-source-x.y.z/
+<span class="nb">cp</span> /boot/config-x.y.z-amd64-generic .config
+<span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/# CONFIG_UFS_FS_WRITE is not set/CONFIG_UFS_FS_WRITE=y/'</span> /usr/src/linux-source-x.y.z/.config
+<span class="nv">CONCURRENCY_LEVEL</span><span class="o">=</span>4 make-kpkg <span class="nt">--initrd</span> <span class="nt">--append-to-version</span><span class="o">=</span>awesome-custom-ufs-kernel kernel-image kernel-headers
+dpkg <span class="nt">-i</span> /usr/src/linux-image-x.y.z.deb
+</code></pre></div></div>
+
+<p>Reboot, select from GRUB and you’re done!</p>
+
+<p>07/19/15 Update: UFS write support is still EXPERIMENTAL and unfortunatley I’ve already encountered numerous bugs (within virt-sysprep + virt-customize)</p>
+:ET

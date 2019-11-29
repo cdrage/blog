@@ -1,0 +1,2 @@
+I"È<p>Spend hours trying to figure this out, but if you want to setup websockets (aka connecting to a libvirt/qemu based kvm vm via vnc / novnc web client), the port must be 5700 + VNC display port.</p>
+:ET

@@ -1,0 +1,75 @@
+I"�<p>This has to do with <a href="https://docker.com">docker</a>, if you don’t know what it is, I <em>highly</em> suggest you check it out. It’s awesome.</p>
+
+<p>Configuring TLS (https certificates) is a pain in the ass. Whether it’s figuring out what the correct way to configure NGINX, or throwing certificates in-front of a proxy. There’s <em>always</em> something that comes up or goes wrong.</p>
+
+<p><a href="https://letsencrypt.org/">Let’s Encrypt</a> launched in 2016 and effectively made it easy and FREE to create certificates. Even better, they’re also introducing <a href="https://letsencrypt.org/2017/07/06/wildcard-certificates-coming-jan-2018.html">Wildcard support</a>.</p>
+
+<p>Anyways. Getting to the point.</p>
+
+<p>Day to day I work with <a href="https://github.com/cdrage/dockerfiles">containers</a> and one of the biggest annoyances is HTTPS support. While working on my <a href="https://www.seafile.com/en/home/">Seafile</a> server container (an open source Dropbox-alternative), I was required to configure https in order to get file retrieval working on Android or iOS. Painlessly I tried configuring the container to use TLS certificates and then I thought, why am I doing this? I could just throw a reverse proxy infront of it.</p>
+
+<p>After some research, I found <a href="https://github.com/JrCs/docker-letsencrypt-nginx-proxy-companion">docker-letsencrypt-nginx-proxy-companion</a>.</p>
+
+<p>Essentially, you throw nginx-proxy and the above container on your Docker host and add a simple environment variable to your container (<code class="highlighter-rouge">-e "VIRTUAL_HOST=foo.bar.com"</code>). Then BAM, you’ve got a brand-spanking-new TLS certificate proxying https to your container without ever needing to touch any certificates or NGINX configs.</p>
+
+<p>Here’s how you do it.</p>
+
+<p><strong>Prereqs:</strong></p>
+
+<p>Make sure you already have an <code class="highlighter-rouge">A Record</code> of the subdomain pointing towards your host! In this example, we’re going to use <code class="highlighter-rouge">example.domain.com</code>.</p>
+
+<p><strong>First off, we’re going to launch nginx-proxy:</strong></p>
+
+<p>This automatically forwards traffic to Docker containers when they come up. The brain and braun of this operation.</p>
+
+<p>The only volume we’re interested about is <code class="highlighter-rouge">/var/nginx/certs</code> which will be hosted on your machine.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-d</span> <span class="nt">-p</span> 80:80 <span class="nt">-p</span> 443:443 <span class="se">\</span>
+    <span class="nt">--name</span> nginx-proxy <span class="se">\</span>
+    <span class="nt">-v</span> /var/nginx/certs:/etc/nginx/certs:ro <span class="se">\</span>
+    <span class="nt">-v</span> /etc/nginx/vhost.d <span class="se">\</span>
+    <span class="nt">-v</span> /usr/share/nginx/html <span class="se">\</span>
+    <span class="nt">-v</span> /var/run/docker.sock:/tmp/docker.sock:ro <span class="se">\</span>
+    <span class="nt">--label</span> com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy <span class="se">\</span>
+    jwilder/nginx-proxy
+</code></pre></div></div>
+
+<p><strong>Now, we’re going to use the Let’s Encrypt companion:</strong></p>
+
+<p>This part is awesome. When a container is launched not only will nginx-proxy quickly restart, but this companion container will automatically generate, retrieve and configure the TLS certificate. IT’S MAGIC.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-d</span> <span class="se">\</span>
+	<span class="nt">--name</span> lets-encrypt <span class="se">\</span>
+	<span class="nt">-v</span> /var/nginx/certs:/etc/nginx/certs:rw <span class="se">\</span>
+	<span class="nt">-v</span> /var/run/docker.sock:/var/run/docker.sock:ro <span class="se">\</span>
+	<span class="nt">--volumes-from</span> nginx-proxy <span class="se">\</span>
+	jrcs/letsencrypt-nginx-proxy-companion
+</code></pre></div></div>
+
+<p><strong>Let’s launch an example container (or a few!):</strong></p>
+
+<p>Now I’ve got to prove to you this whole operation works.</p>
+
+<p>Let’s launch an example container!</p>
+
+<p>One prereq: If the container isn’t already a port, pass in <code class="highlighter-rouge">--expose PORT</code>. We’ll need this to actually access the container from nginx-proxy.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker run <span class="nt">-d</span> <span class="se">\</span>
+	<span class="nt">--expose</span> 80 <span class="se">\</span>
+	<span class="nt">--name</span> example-app <span class="se">\</span>
+	<span class="nt">-e</span> <span class="s2">"VIRTUAL_HOST=example.domain.com"</span> <span class="se">\</span>
+	<span class="nt">-e</span> <span class="s2">"LETSENCRYPT_HOST=example.domain.com"</span> <span class="se">\</span>
+	<span class="nt">-e</span> <span class="s2">"LETSENCRYPT_EMAIL=youremail@domain.com"</span> <span class="se">\</span>
+	tutum/apache-php
+</code></pre></div></div>
+
+<p>Alternatively, if your container happens to be on a different port, simply pass in <code class="highlighter-rouge">-e "VIRTUAL_PORT=8080"</code> to the command line. It doesn’t matter if the container is running on port 80!</p>
+
+<p><strong>Finally, access your service:</strong></p>
+
+<p>From the public IP address of your host. Simply go to <code class="highlighter-rouge">example.domain.com</code> to access your service!</p>
+
+<p>You can do this with ANY container on any port (if you pass in VIRTUAL_PORT). It makes like <em>way</em> easier and accessible.</p>
+
+<p>If you enjoyed this blog post, feel free to check our my <a href="https://github.com/cdrage/dockerfiles">Dockerfiles</a>. Specifically, if you wish to host something on your home internet with DynamicDNS (not having to use a VPS), check our my <a href="https://github.com/cdrage/dockerfiles/tree/master/digitalocean-dns">digialocean-dns</a> container.</p>
+:ET

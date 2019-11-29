@@ -1,0 +1,28 @@
+I"4<p>This is an update of my previous post <a href="/sensu-server-docker-with-notifications">here</a> with a <strong>wayyyy</strong> easier method of deploying a sensu server.</p>
+
+<p>I’m not going to go too much into detail. But if you’ve found this post, you’re most likely coming from Google and already know what Sensu is and want to deploy it with Docker Compose.</p>
+
+<p>TLDR: <a href="https://github.com/sensu/sensu">Sensu</a> is an awesome monitoring service built in Ruby. It scales with RabbitMQ and let’s an assortment of clients connect to it. Similar to Nagios, but uses Client&lt;–&gt;Server communication. Checks can be created in any language (similar to Nagios).</p>
+
+<p>Anyways.</p>
+
+<p>Usually you have to install: <strong>RabbitMQ, Redis, Ruby and well… Sensu</strong> in order to deploy Sensu. Not only that, but you also have to generate SSL certs for both RabbitMQ, the Sensu server and all your clients.</p>
+
+<p>Oh, want a modern UI as well? You’ll also want to install <a href="https://github.com/sensu/uchiwa">Uchiwa</a>…</p>
+
+<p>Before proceeding, make sure you’ve got <strong>1.10</strong> of docker and <strong>1.6</strong> of docker-compose.</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/cdrage/composefiles
+<span class="nb">cd </span>composefiles/sensu-server
+./gen_ssl.sh
+docker-compose up
+</code></pre></div></div>
+
+<p>Seriously, that’s it. Go checkout <strong>localhost:3000</strong> and you’ll see your sensu server up and running.</p>
+
+<p>Want to connect a sensu-client to your server? Use the SSL certificates located in <strong>ssl/client</strong>.</p>
+
+<p>What about modify your <strong>checks.json</strong> or <strong>config.json</strong>? Simply modify <strong>config/sensu.json</strong> and <strong>config/sensu-checks.json</strong> and run <strong>docker-compose restart</strong> and you’re done.</p>
+
+<p>Each component is separated into it’s own microservice using docker-compose and can be easily scaled up or down depending on your work-load.</p>
+:ET
