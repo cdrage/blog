@@ -10,6 +10,8 @@ Books I've read
 - 08/04/19 - The Summer Book - Tove Jansson
 - 10/21/19 - Permanent Record - Edward Snowden
 - 11/15/19 - Flowers for Algernon - Daniel Keyes
+- 12/06/19 - Children of Time - Adrian Tchaikovsky
+- 12/21/19 - Recursion - Blake Crouch
 
 # 2018:
 - 01/05/18 - Annihilation - Jeff VanderMeer
