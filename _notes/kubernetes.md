@@ -5,69 +5,63 @@ layout: post
 * TOC
 {:toc}
 
+
+# Notes on the book: Designing Distributed Systems
+
+## Sidecar pattern
+
+Definition: An application made up of two containers (application + side-car). The side-car is normally transparent and helps augment / improve the initial running application container
+
+Tips:
+  - Consider implementing a  `/topz` http endpoint to provide a readout of resource usage (all of this on the sidecar container..)
+  - Use it for monitoring also, create a /check endpoint or something similar
+  - In the example, the sidecar shares the same filesystem and runs a back loop to pull a git repository
+
+## Ambassador pattern
+
+Sits infront of your application container. Essentially a proxy to your application. Can proxy these connections to different pods.
+
+## Adapter pattern
+
+Creating another container that is added to the application's pod of containers as a means of "adapting" components such as monitoring / logging into something consumable. Ex. Redis does not export logs well, so you'll add an adapter for redis logging to be consumed by Prometheus.
+
+Tips:
+  - Create a container that checks a database and then outputs "OK" with HTTP code 200 on /health ? Or something similar.
+
+## Replicated load balanced services
+
+- Make sure you deploy a readiness probe when designing / creating replicated services
+- Make sure that the same IP address is hitting the same pod / container if you're using cache / cookie / session based instances
+
+## Sharded services
+
+Stateful sets usually used
+
+Shard = only serving a subset of all requests
+
+Great for proxying / cacheing, for example, using memcache in a stateful set to proxy.
+
+Another example: Multiplayer games which have different players from different countries would go to certain servers based on their location.
+
+## Scatter/Gather
+
+Sharded, replicated distributionch
+
 # Kubernetes
 
 Advantages is being able to develop decoupled service-oriented teams that each build a single microservice. Allows mutable infrastructure.
 
 # Bare-metal cluster (at least for development)
 
-## Other notes before continuing
+**Setup:**
 
-- Make sure that `/etc/resolv.conf` is correct! Kubernetes will automatically add any domains / search to the kubelet and thus if your /etc/resolv.conf is incorrect, it may screw up and DNS resolution!
+- Deployment: Deploy using [kubeadm-ansible](https://github.com/kairen/kubeadm-ansible)
+- Ingress: [ingress-nginx](https://github.com/kubernetes/ingress-nginx)
+- TLS: [cert-manager](https://github.com/jetstack/cert-manager) with Let's Encrypt
+- LoadBalancer: [metallb](https://github.com/metallb/metallb)
+- Storage: [nfs-client](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs-client)
 
-## Deployment
-
-Use kubeadm ansible script I made
-
-## Helm
-
-```sh
-kubectl --namespace kube-system create serviceaccount tiller
-kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-helm init --service-account tiller --upgrade
-```
-
-
-## Ingress
-
-Notes: Setup the router to forward port 80 traffic to the Kubernetes master which will handle Ingresses and all!
-
-```sh
-helm install stable/nginx-ingress --namespace nginx-ingress --set controller.hostNetwork=true,controller.kind=DaemonSet
-```
-
-Deploy, check the EXTERNAL-IP (`kubectl get svc --all-namespaces`) and if you're behind a home network. You'll have to port forward 80 and 443 to whatever IP address shows under EXTERNAL-IP.
-
-TODO: make  notes regarding how to deploy a wordpress example with nginx + lets encrypt, etc?
-
-When setting an ingress, use a similar template to this:
-
-```yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    # Optional!
-    nginx.ingress.kubernetes.io/rewrite-target: "/"
-  name: cockroach-ingress
-  namespace: default
-spec:
-  rules:
-    - host: test.charliedrage.com
-      http:
-        paths:
-          - path: /foo
-            backend:
-              serviceName: database-cockroachdb-public
-              servicePort: 8080
-          - path: /bar
-            backend:
-              serviceName: nginx
-              servicePort: 80
-```
-
-## Let's Encrypt
+## Notes on setting up Let's Encrypt
 
 ```sh
 helm install \
@@ -177,15 +171,6 @@ helm install stable/nfs-client-provisioner -n nfs-client --set nfs.server=192.16
 
 ## Monitoring
 
-Use Prometheus + AlertManager + Grafana
-
-Internal link: prometheus-server.default.svc
-
-```sh
-helm install --name prometheus stable/prometheus
-helm install --name grafana stable/grafana
-```
-
 # Certified Kubernetes Administrator (CKA)
 
 - 100% practical, "fixing" broken environments
@@ -193,37 +178,37 @@ helm install --name grafana stable/grafana
 
 Curriculum:
 
-Application Lifecycle Management 8%
-Installation, Configuration & Validation 12%
-Core Concepts 19%
-Networking 11%
-Scheduling 5%
-Security 12%
-Cluster Maintenance 11%
-Logging / Monitoring 5%
-Storage 7%
-Troubleshooting 10%
+- Application Lifecycle Management 8%
+- Installation, Configuration & Validation 12%
+- Core Concepts 19%
+- Networking 11%
+- Scheduling 5%
+- Security 12%
+- Cluster Maintenance 11%
+- Logging / Monitoring 5%
+- Storage 7%
+- Troubleshooting 10%
 
 Course-outline:
 
-Chapter 1. Course Introduction
-Chapter 2. Basics of Kubernetes
-Chapter 3. Kubernetes Architecture
-Chapter 4. Kubernetes Installation and Configuration
-Chapter 5. Accessing a k8s Cluster and Using the API
-Chapter 6. Replication Controllers and Deployments
-Chapter 7. Volumes and Application Data
-Chapter 8. Services
-Chapter 9. Ingress
-Chapter 10. Additional API Objects
-Chapter 11. Scheduling
-Chapter 12. Logging, Monitoring, and Troubleshooting
-Chapter 13. Third-Party Resources
-Chapter 14. Kubernetes Federation
-Chapter 15. Helm
-Chapter 16. Security
+- Chapter 1. Course Introduction
+- Chapter 2. Basics of Kubernetes
+- Chapter 3. Kubernetes Architecture
+- Chapter 4. Kubernetes Installation and Configuration
+- Chapter 5. Accessing a k8s Cluster and Using the API
+- Chapter 6. Replication Controllers and Deployments
+- Chapter 7. Volumes and Application Data
+- Chapter 8. Services
+- Chapter 9. Ingress
+- Chapter 10. Additional API Objects
+- Chapter 11. Scheduling
+- Chapter 12. Logging, Monitoring, and Troubleshooting
+- Chapter 13. Third-Party Resources
+- Chapter 14. Kubernetes Federation
+- Chapter 15. Helm
+- Chapter 16. Security
 
-# Components of Kubernetes
+# Components of Kubernetes / Definitions
 
 Internal components:
   - kube-proxy: Routing traffic to load-balanced services in the Kubernetes cluster
@@ -245,6 +230,82 @@ Manually:
  - ReplicaSet - Same as Replication Controller but has selector support (should be created through Deployment)
  - ReplicationController - Ensures specific number of pod replicas are running at any given time (should be created through Deployment)
  - Container - Only created in the context of a Pod (should be created through Pod)
+
+# Labels and Selectors
+
+Labels / selectors map services and deployments together..
+
+For example:
+
+```yaml
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  selector:
+    app: redis
+  ...
+
+# Maps to:
+kind: StatefulSet
+metadata: 
+  name: sharded-redis
+spec:
+  template:
+    metadata:
+      labels:
+        app: redis
+  spec:
+    ...
+
+```
+
+Identify and group objects in a Kubernetes cluster.
+
+Update labels on any object:
+
+```sh
+# Add
+kubectl label pods bar color=red
+
+# Remove
+kubectl label pods bar -color
+```
+
+Used to map system objects. Example labels:
+  - "release" : "stable", "release": "canary"
+
+```json
+"labels": {
+  "key1" : "value1",
+  "key2" : "value2"
+}
+```
+
+```json
+"selector": {
+    "component" : "redis"
+}
+```
+
+# Annotations
+
+Attach non-identifying metadata to objects. So tools or libraries can retrieve it.
+
+Primary use-case would be for rolling deployments. Annoyations are used to track rollout status and provide necessary information required to roll back a deployment.
+
+"namespace" part of the key is important.
+examples: `deployment.kubernetes.io/revision` or `kubernetes.io/change-cause`
+
+```json
+"annotations": {
+  "key1" : "value1",
+  "key2" : "value2"
+}
+```
+
 
 # Deployments
 
@@ -271,7 +332,7 @@ strategy:
     maxSurge: 1
     # Set the max "unavailable" during a rolling update
     maxUnavailable: 1
-  type: typeRollingUpdate
+  type: RollingUpdate
 ...
 ```
 
@@ -350,6 +411,28 @@ Using services to expose your service (frontend):
 - ExternalName (maps the content to an external name, requires kube-dns)
 
 The two ways to expose is publically would be NodePorts or LoadBalancer. ClusterIP is internal and ExternalName is Kubernetes 1.7+ with kube-dns.
+
+## Loadbalancer example:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+  clusterIP: 10.0.171.239
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 192.0.2.127
+```
 
 # Autoscaling / Horizontal Pod Autoscalers
 
@@ -553,52 +636,6 @@ resources:
 ...
 ```
 
-
-# Labels and Selectors
-
-Identify and group objects in a Kubernetes cluster.
-
-Update labels on any object:
-
-```sh
-# Add
-kubectl label pods bar color=red
-
-# Remove
-kubectl label pods bar -color
-```
-
-Used to map system objects. Example labels:
-  - "release" : "stable", "release": "canary"
-
-```json
-"labels": {
-  "key1" : "value1",
-  "key2" : "value2"
-}
-```
-
-```json
-"selector": {
-    "component" : "redis"
-}
-```
-
-# Annotations
-
-Attach non-identifying metadata to objects. So tools or libraries can retrieve it.
-
-Primary use-case would be for rolling deployments. Annoyations are used to track rollout status and provide necessary information required to roll back a deployment.
-
-"namespace" part of the key is important.
-examples: `deployment.kubernetes.io/revision` or `kubernetes.io/change-cause`
-
-```json
-"annotations": {
-  "key1" : "value1",
-  "key2" : "value2"
-}
-```
 
 # Endpoints / Service Discovery
 
