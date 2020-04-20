@@ -999,6 +999,33 @@ volumes:
 
 https://kubernetes.io/docs/concepts/storage/volumes/
 
+
+# CKAD Questions / studying
+
+https://medium.com/bb-tutorials-and-thoughts/practice-enough-with-these-questions-for-the-ckad-exam-2f42d1228552
+
+
+## Core concepts
+
+```sh
+# Create an NGINX pod in the default namespace
+kubectl run nginx --image nginx --namespace default --restart Never
+
+# Create and expose 80
+kubectl run nginx --image nginx:1.17.4 --restart Never --port 80
+
+# Create a busybox pod with command sleep 3600
+kubectl run busybox --image busybox --restart -- /bin/sh -c "sleep 3600"
+
+# Change the image of the pod
+kubectl set image pod/nginx nginx=nginx:1.15-alpine
+
+# Go into a pod
+kubectl exec -it busybox /bin/sh
+```
+
+
+
 # Examples
 
 ## Parse server
