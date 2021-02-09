@@ -4,6 +4,10 @@ layout: post
 
 Books I've read
 
+# 2020:
+- 05/01/20 - The Fifth Season - N.K. Jemisin
+- 07/29/20 - World War Z - Max Brooks
+
 # 2019:
 - 02/01/19 - Dune - Frank Herbert
 - 03/01/19 - Dune Messiah - Frank Herbert
@@ -18,6 +22,7 @@ Books I've read
 - 02/24/18 - The Disspossed - Ursula K. Le Guin
 - 06/20/18 - Blindsight - Peter Watts
 - 10/01/18 - A Game of Thrones - George R. R. Martin
+- 11/03/18 - City of Thieves - Daniel Benioff
 
 # 2017:
 - 01/11/17 - The Three-Body Problem - Liu Cixin
