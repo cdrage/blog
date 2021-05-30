@@ -237,12 +237,6 @@ For jumps:
 - Always use an even throttle (slight acceleration)
 - Always lean forward as you run up the up-ramp
 
-# Ken Hell's Podcast:
-
-
-# 16 How to Find Your Limits:
-- For brakes: 
-
 # Painting
 
 Instructions:
