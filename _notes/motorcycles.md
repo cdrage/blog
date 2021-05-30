@@ -43,69 +43,6 @@ Notes:
 3. Open brake nipple and bleed until you see old fluid come out
 4. Top up MC 
 
-# Painting
-
-Instructions:
-
-Requirements:
-
-- 400, 600, 1000, 1500, 2000 grit sandpaper
-- 3-5 cans of rattlecan paint (built-in primer if your's isn't primed yet)
-- 3 cans of clearcoat (I only had to use 2 and it looked great, 3 if you're OCD / really want it to shine)
-
-Preparation:
-
-Light 400 grit light all-over the fairings (sand 400 then 600 for gas tank plastic since it's hard as fuck...)
-
-Base coat: 
-
-1. 2-3 light (VERY light! it's really easy to make it drip) coats, wait 5 minutes each coat (check can for time between coats)
-2. Wait 1 day before proceeding for it to fully dry
-3. Light 1000 WET sand all-over (don't dry sand!)
-4. Wash with light soapy solution and rinse
-5. Let it dry thoroughly, dry with a tack cloth too. Ideally, let it dry out in a place with no dust.
-
-Clear coat:
-
-1. 3 light coats of clear-coat, wait 10 minutes each coat (check can for time between coats). Again, SUPER LIGHT. Clear coat is the easiest to make drip. It's okay to do more than 3 coats all-over.
-2. Wait 24 hours before proceeding (clear coat takes a while to fully dry)
-
-(Rest of steps is OPTIONAL. Your job may look great already with the clear coat, but if you wish to make it shiny even more, proceed below..)
-
-3. Wet sand with 1000 grit, then 1500 grit, then finally with 2000 grit. 2 passes over entire part each stage
-4. Quick rinse before rub / polishing
-5. Rub: Run 3-4 passes over whole part with rubbing compound with a microfiber cloth (apply compound to surface, spread using cloth, when compound and water are thrown aside and absorbed by the foam pad, mode to next panel!). I'd advise against a microfiber wheel 
-6. Polish: Run 3-4 passes over whole part with polishing compound + microfiber cloth (apply compound to surface, spread using cloth)
-7. Wax!
-
-
-# Dirt Biking Tips
-
-Sand:
-1. Only in DEEP deep sand, speed up and move your weight back, keep throttle steady or short bursts (like, gopher dunes deep sand..)
-
-Other:
-2. To turn, push the bike down, keep upright, use the knobs of the tires
-3. Look where you want to go
-4. Stand up on the footpegs on straights
-5. Taking a normal turn, shift weight to the outside peg, keep upright.
-6. In corners, sit as far forward as possible
-
-For jumps:
-- Do all acceleration before the jump, then keep steady / neutral throttle up to and over the jump
-- Standing up!
-- Try to keep it a gear higher than you need to be
-- If you front end drops in the air, hit the throttle to help yourself out
-- Always use an even throttle (slight acceleration)
-- Always lean forward as you run up the up-ramp
-
-# Ken Hell's Podcast:
-
-
-# 16 How to Find Your Limits:
-- For brakes: 
-
-
 # Track tips
 
 ## Cornering
@@ -279,3 +216,66 @@ TLDR:
 1. Smooth (braking, corner lines, throttle)
 2. Vision (look far ahead)
 3. Body position (more comfy lean = naturally more speed. You'll have to go faster to keep from turning too sharp.)
+
+# Dirt Biking Tips
+
+Sand:
+1. Only in DEEP deep sand, speed up and move your weight back, keep throttle steady or short bursts (like, gopher dunes deep sand..)
+
+Other:
+2. To turn, push the bike down, keep upright, use the knobs of the tires
+3. Look where you want to go
+4. Stand up on the footpegs on straights
+5. Taking a normal turn, shift weight to the outside peg, keep upright.
+6. In corners, sit as far forward as possible
+
+For jumps:
+- Do all acceleration before the jump, then keep steady / neutral throttle up to and over the jump
+- Standing up!
+- Try to keep it a gear higher than you need to be
+- If you front end drops in the air, hit the throttle to help yourself out
+- Always use an even throttle (slight acceleration)
+- Always lean forward as you run up the up-ramp
+
+# Ken Hell's Podcast:
+
+
+# 16 How to Find Your Limits:
+- For brakes: 
+
+# Painting
+
+Instructions:
+
+Requirements:
+
+- 400, 600, 1000, 1500, 2000 grit sandpaper
+- 3-5 cans of rattlecan paint (built-in primer if your's isn't primed yet)
+- 3 cans of clearcoat (I only had to use 2 and it looked great, 3 if you're OCD / really want it to shine)
+
+Preparation:
+
+Light 400 grit light all-over the fairings (sand 400 then 600 for gas tank plastic since it's hard as fuck...)
+
+Base coat: 
+
+1. 2-3 light (VERY light! it's really easy to make it drip) coats, wait 5 minutes each coat (check can for time between coats)
+2. Wait 1 day before proceeding for it to fully dry
+3. Light 1000 WET sand all-over (don't dry sand!)
+4. Wash with light soapy solution and rinse
+5. Let it dry thoroughly, dry with a tack cloth too. Ideally, let it dry out in a place with no dust.
+
+Clear coat:
+
+1. 3 light coats of clear-coat, wait 10 minutes each coat (check can for time between coats). Again, SUPER LIGHT. Clear coat is the easiest to make drip. It's okay to do more than 3 coats all-over.
+2. Wait 24 hours before proceeding (clear coat takes a while to fully dry)
+
+(Rest of steps is OPTIONAL. Your job may look great already with the clear coat, but if you wish to make it shiny even more, proceed below..)
+
+3. Wet sand with 1000 grit, then 1500 grit, then finally with 2000 grit. 2 passes over entire part each stage
+4. Quick rinse before rub / polishing
+5. Rub: Run 3-4 passes over whole part with rubbing compound with a microfiber cloth (apply compound to surface, spread using cloth, when compound and water are thrown aside and absorbed by the foam pad, mode to next panel!). I'd advise against a microfiber wheel 
+6. Polish: Run 3-4 passes over whole part with polishing compound + microfiber cloth (apply compound to surface, spread using cloth)
+7. Wax!
+
+
